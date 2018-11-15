@@ -26,10 +26,9 @@ class LogLineTest extends TestCase
         ];
 
         $logLine  = new LogLine();
-        $promise = $logLine->json($message, $context, $event, $level);
+        $response = $logLine->json($message, $context, $event, $level);
 
-        $result = $promise->wait();
-        $this->assertEquals('Accepted logs', $result->getBody()->getContents());
+        $this->assertEquals('Accepted logs', $response);
     }
 
 }

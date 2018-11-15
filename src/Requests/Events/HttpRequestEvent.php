@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 
 class HttpRequestEvent extends HttpEvent
 {
+    /* @var $request Request */
+    protected $request;
+
     /**
      * HttpRequestEvent constructor.
      * @param Request $request
@@ -17,6 +20,14 @@ class HttpRequestEvent extends HttpEvent
         $this->request = $request;
         $this->direction = $direction;
         $this->serviceName = $serviceName;
+
+        $this->startEvent();
+    }
+
+    protected function startEvent()
+    {
+        $this->setRequestId();
+        $this->setRequestStartTime();
     }
 
     public function getMessage(): string
@@ -26,12 +37,19 @@ class HttpRequestEvent extends HttpEvent
 
         switch ($this->direction) {
             case self::DIRECTION_OUT:
-                return "Sent $method $path";
+                $message = "Sent $method $path";
+                if ($this->serviceName) {
+                    $message .= " to $this->serviceName";
+                }
+                break;
             case self::DIRECTION_IN:
-                return "Received $method $path";
+                $message = "Received $method $path";
+                break;
+            default:
+                $message = "Request $method $path";
         }
 
-        return "Request $method $path";
+        return $message;
     }
 
     public function getEvent(): array

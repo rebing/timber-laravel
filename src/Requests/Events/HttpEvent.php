@@ -11,6 +11,7 @@ abstract class HttpEvent extends AbstractEvent
     protected $serviceName;
 
     const SESSION_REQUEST_KEY = 'TIMBER_REQUEST_ID';
+    const SESSION_REQUEST = 'TIMBER_REQUEST';
     const DIRECTION_OUT = 'outgoing';
     const DIRECTION_IN = 'incoming';
 
@@ -27,12 +28,8 @@ abstract class HttpEvent extends AbstractEvent
     /**
      * Get a unique ID connected to the current session
      */
-    protected function getRequestId(): string
+    public function getRequestId(): string
     {
-        if ($this->requestId) {
-            return $this->requestId;
-        }
-
         $reqId = Session::get(self::SESSION_REQUEST_KEY);
 
         if (is_null($reqId)) {
@@ -40,6 +37,35 @@ abstract class HttpEvent extends AbstractEvent
         }
 
         return $reqId;
+    }
+
+    protected function setRequestStartTime()
+    {
+        $time = microtime(true);
+        Session::put($this->getRequestSessionId() . '_time', $time);
+        return $time;
+    }
+
+    protected function getRequestStartTime()
+    {
+        $time = Session::get($this->getRequestSessionId() . '_time');
+        return $time;
+    }
+
+    protected function getElapsedTimeInMs(): ?float
+    {
+        $startTime = $this->getRequestStartTime();
+        if (is_null($startTime)) {
+            return null;
+        }
+
+        $currentTime = microtime(true);
+        return ($currentTime - $startTime) * 1000;
+    }
+
+    private function getRequestSessionId()
+    {
+        return self::SESSION_REQUEST . $this->getRequestId() . $this->serviceName;
     }
 
     public function getContext(): array

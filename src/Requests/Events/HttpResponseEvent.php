@@ -3,11 +3,13 @@
 namespace Rebing\Timber\Requests\Events;
 
 use Illuminate\Http\Response;
+use function is_null;
+use function number_format;
 
 class HttpResponseEvent extends HttpEvent
 {
     /* @var $response Response */
-    private $response;
+    protected $response;
 
     /**
      * HttpRequestEvent constructor.
@@ -25,15 +27,21 @@ class HttpResponseEvent extends HttpEvent
     public function getMessage(): string
     {
         $status = $this->response->status();
+        $elapsedTime = $this->getElapsedTimeInMs();
+        $elapsedTime = is_null($elapsedTime) ? null : number_format($elapsedTime, 2);
 
         switch ($this->direction) {
             case self::DIRECTION_OUT:
-                return "Sent $status response in ";
+                $message = "Sent $status response in {$elapsedTime}ms";
+                break;
             case self::DIRECTION_IN:
-                return "Received $status response from .. in ";
+                $message = "Received $status response from $this->serviceName in {$elapsedTime}ms";
+                break;
+            default:
+                $message = "Response $status";
         }
 
-        return "Response $status";
+        return $message;
     }
 
     public function getEvent(): array

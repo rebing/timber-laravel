@@ -16,10 +16,11 @@ class HttpRequestEventTest extends TestCase
     public function testCreatesANewOutgoingRequestEventAndGetsTheMessage()
     {
         $request = new Request();
+        $serviceName = str_random();
 
-        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT);
+        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT, $serviceName);
 
-        $message = "Sent GET /";
+        $message = "Sent GET / to $serviceName";
         $this->assertEquals($message, $event->getMessage());
     }
 
@@ -83,5 +84,19 @@ class HttpRequestEventTest extends TestCase
             ],
         ];
         $this->assertEquals($expectedData, $contextData);
+    }
+
+    /**
+     * @test
+     */
+    public function testCreatesANewRequestEventAndGetsTheRequestId()
+    {
+        $request = new Request();
+
+        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT);
+
+        $requestId = $event->getRequestId();
+        $this->assertNotNull($requestId);
+        $this->assertNotNull(Session::get(HttpEvent::SESSION_REQUEST . $requestId . '_time'));
     }
 }

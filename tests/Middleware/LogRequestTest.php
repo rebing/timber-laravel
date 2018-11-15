@@ -4,6 +4,7 @@ namespace Rebing\Timber\Tests\Middleware;
 
 use Illuminate\Http\Request;
 use Rebing\Timber\Middleware\LogRequest;
+use Rebing\Timber\Requests\Events\HttpRequestEvent;
 use Rebing\Timber\Tests\TestCase;
 
 class LogRequestTest extends TestCase
@@ -20,9 +21,8 @@ class LogRequestTest extends TestCase
         $request->setMethod('POST');
         $request->merge($data);
 
+        $this->expectsJobs(HttpRequestEvent::class);
         $middleware = new LogRequest();
-        $response = $middleware->handle($request, function($req) {});
-
-        $this->assertNull($response);
+        $middleware->handle($request, function($req) {});
     }
 }
