@@ -2,16 +2,17 @@
 
 namespace Rebing\Timber\Requests\Events;
 
-use Illuminate\Http\Request;
 use Session;
 
 abstract class HttpEvent extends AbstractEvent
 {
-    /* @var $request Request */
-    protected $request;
     protected $requestId;
+    protected $direction;
+    protected $serviceName;
 
     const SESSION_REQUEST_KEY = 'TIMBER_REQUEST_ID';
+    const DIRECTION_OUT = 'outgoing';
+    const DIRECTION_IN = 'incoming';
 
     /**
      * Set a unique request ID for the current session
@@ -43,19 +44,24 @@ abstract class HttpEvent extends AbstractEvent
 
     public function getContext(): array
     {
-        return [
+        $data = [
             'http'   => $this->getHttpContext(),
             'system' => $this->getSystemContext(),
-            'user'   => $this->getUserContext(),
         ];
+
+        if ($user = $this->getUserContext()) {
+            $data['user'] = $user;
+        }
+
+        return $data;
     }
 
     private function getHttpContext(): array
     {
         return [
-            'method'      => $this->request->getMethod(),
-            'path'        => $this->request->path(),
-            'remote_addr' => $this->request->ip(),
+            'method'      => request()->method(),
+            'path'        => request()->path(),
+            'remote_addr' => request()->ip(),
             'request_id'  => $this->getRequestId(),
         ];
     }

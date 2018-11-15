@@ -3,24 +3,20 @@
 namespace Rebing\Timber\Tests\Middleware;
 
 use Illuminate\Http\Request;
-use Rebing\Timber\Middleware\LogRequest;
+use Rebing\Timber\Middleware\LogResponse;
 use Rebing\Timber\Tests\TestCase;
 
-class LogRequestTest extends TestCase
+class LogResponseTest extends TestCase
 {
     /**
+     * @group testing
      * @test
      */
     public function testSendsANewLogToTimberWIthRequest()
     {
         $request = new Request();
-        $data = [
-            'key' => 'value',
-        ];
-        $request->setMethod('POST');
-        $request->merge($data);
 
-        $middleware = new LogRequest();
+        $middleware = new LogResponse();
         $response = $middleware->handle($request, function($req) {});
 
         $this->assertNull($response);

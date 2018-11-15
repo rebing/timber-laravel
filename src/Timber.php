@@ -43,6 +43,7 @@ class Timber
                 'Authorization' => 'Basic ' . base64_encode($this->apiKey),
             ],
         ]);
+
         $res = $client->request($method, $endpoint, $options);
 
         return $res->getBody()->getContents();

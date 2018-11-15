@@ -17,7 +17,7 @@ class HttpRequestEventTest extends TestCase
     {
         $request = new Request();
 
-        $event = new HttpRequestEvent($request, HttpRequestEvent::DIRECTION_OUT);
+        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT);
 
         $message = "Sent GET /";
         $this->assertEquals($message, $event->getMessage());
@@ -30,7 +30,7 @@ class HttpRequestEventTest extends TestCase
     {
         $request = new Request();
 
-        $event = new HttpRequestEvent($request, HttpRequestEvent::DIRECTION_IN);
+        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_IN);
 
         $message = "Received GET /";
         $this->assertEquals($message, $event->getMessage());
@@ -42,20 +42,18 @@ class HttpRequestEventTest extends TestCase
     public function testCreatesANewRequestEventAndGetsEventData()
     {
         $request = new Request();
+        $direction = HttpRequestEvent::DIRECTION_OUT;
 
-        $event = new HttpRequestEvent($request, HttpRequestEvent::DIRECTION_OUT);
+        $event = new HttpRequestEvent($request, $direction);
 
-        $eventData    = $event->getEvent();
+        $eventData = $event->getEvent();
         $expectedData = [
             'http_request' => [
-                'headers'      => [],
-                'host'         => '',
                 'method'       => 'GET',
                 'path'         => '/',
-                'port'         => null,
-                'query_string' => null,
                 'scheme'       => 'http',
                 'request_id'   => Session::get(HttpEvent::SESSION_REQUEST_KEY),
+                'direction'    => $direction,
             ],
         ];
         $this->assertEquals($expectedData, $eventData);
@@ -68,22 +66,21 @@ class HttpRequestEventTest extends TestCase
     {
         $request = new Request();
 
-        $event = new HttpRequestEvent($request, HttpRequestEvent::DIRECTION_OUT);
+        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT);
 
-        $contextData  = $event->getContext();
+        $contextData = $event->getContext();
         $expectedData = [
             'http'   => [
                 'method'      => 'GET',
                 'path'        => '/',
-                'remote_addr' => null,
+                'remote_addr' => request()->ip(),
                 'request_id'  => Session::get(HttpEvent::SESSION_REQUEST_KEY),
             ],
             'system' => [
-                'hostname'     => gethostname(),
-                'ip'           => gethostbyname(gethostname()),
-                'pid'          => getmypid(),
+                'hostname' => gethostname(),
+                'ip'       => gethostbyname(gethostname()),
+                'pid'      => getmypid(),
             ],
-            'user'   => [],
         ];
         $this->assertEquals($expectedData, $contextData);
     }

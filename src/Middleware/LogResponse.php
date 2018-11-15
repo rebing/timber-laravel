@@ -5,18 +5,18 @@ namespace Rebing\Timber\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Rebing\Timber\Requests\Events\HttpEvent;
-use Rebing\Timber\Requests\Events\HttpRequestEvent;
+use Rebing\Timber\Requests\Events\HttpResponseEvent;
 
 /**
- * Middleware (beforeware) that logs the incoming request data to Timber
+ * Middleware (afterware) that logs the outgoing response data to Timber
  *
  * Class LogTimberRequest
  * @package Rebing\Timber\Middleware
  */
-class LogRequest
+class LogResponse
 {
     /**
-     * Handle an incoming request and log its data to Timber
+     * Handle an outgoing response and log its data to Timber
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
@@ -27,7 +27,8 @@ class LogRequest
      */
     public function handle(Request $request, Closure $next)
     {
-        dispatch(new HttpRequestEvent($request, HttpEvent::DIRECTION_IN));
+        $response = $next($request);
+        dispatch(new HttpResponseEvent($response, HttpEvent::DIRECTION_OUT));
 
         return $next($request);
     }

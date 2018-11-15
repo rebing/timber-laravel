@@ -3,17 +3,27 @@
 namespace Rebing\Timber\Requests\Events;
 
 use Auth;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 use Rebing\Timber\Requests\LogLine;
 
-abstract class AbstractEvent
+abstract class AbstractEvent implements ShouldQueue
 {
+    use Queueable, InteractsWithQueue;
+
     protected $userContext;
 
-    public function send(?string $message = null)
+    public function handle()
+    {
+        $this->send();
+    }
+
+    public function send()
     {
         $log = new LogLine();
         $log->json(
-            $message ?: $this->getMessage(),
+            $this->getMessage(),
             $this->getContext(),
             $this->getEvent(),
             $this->getLogLevel()
@@ -42,7 +52,7 @@ abstract class AbstractEvent
         ];
     }
 
-    protected function getUserContext(): array
+    protected function getUserContext(): ?array
     {
         if ($this->userContext) {
             return $this->userContext;
@@ -64,7 +74,7 @@ abstract class AbstractEvent
             return $data;
         }
 
-        return [];
+        return null;
     }
 
     public function setUserContext(array $data): void
