@@ -1,0 +1,45 @@
+{
+    "name": "rebing/timber",
+    "description": "Laravel package for communicating with Timber (timber.io) logger API",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mikk Mihkel Nurges",
+            "email": "mikk.nurges@rebing.ee",
+            "role": "Developer"
+        }
+    ],
+    "homepage": "https://github.com/rebing/timber",
+    "keywords": ["Laravel", "Timber", "logging", "log"],
+    "require": {
+        "php": ">=7.1",
+        "illuminate/support": "~5",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~7.0",
+        "mockery/mockery": "^1.1",
+        "orchestra/testbench": "~3.0",
+        "sempro/phpunit-pretty-print": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rebing\\Timber\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rebing\\Timber\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rebing\\Timber\\TimberServiceProvider"
+            ],
+            "aliases": {
+                "Timber": "Rebing\\Timber\\Facades\\Timber"
+            }
+        }
+    }
+}
