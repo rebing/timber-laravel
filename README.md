@@ -10,7 +10,7 @@ A Laravel 5+ wrapper for the [Timber Logger](https://timber.io/) service. Use it
 
 **1.** Require the package via Composer
 ``` bash
-$ composer require rebing/timber
+$ composer require rebing/timber-laravel
 ```
 
 **2.** Laravel 5.5+ will autodiscover the package, for older versions add the
