@@ -107,8 +107,8 @@ MIT. Please see the [license file](license.md) for more information.
 [ico-travis]: https://img.shields.io/travis/rebing/timber/master.svg?style=flat-square
 [ico-styleci]: https://styleci.io/repos/12345678/shield
 
-[link-packagist]: https://packagist.org/packages/rebing/timber
-[link-downloads]: https://packagist.org/packages/rebing/timber
+[link-packagist]: https://packagist.org/packages/rebing/timber-laravel
+[link-downloads]: https://packagist.org/packages/rebing/timber-laravel
 [link-travis]: https://travis-ci.org/rebing/timber
 [link-styleci]: https://styleci.io/repos/12345678
 [link-author]: https://github.com/rebing
