@@ -13,14 +13,14 @@ class HttpResponseEvent extends HttpEvent
     /**
      * HttpRequestEvent constructor.
      * @param Response $response
-     * @param string $direction - incoming or outgoing
+     * @param bool $outgoing
      * @param null|string $serviceName - An optional description, where the request or response is sent
      * @param float|null $elapsedTimeMs - Elapsed time from the request to the response
      */
-    public function __construct($response, string $direction, float $elapsedTimeMs, ?string $serviceName = null)
+    public function __construct($response, bool $outgoing, float $elapsedTimeMs, ?string $serviceName = null)
     {
         $this->response      = $response;
-        $this->direction     = $direction;
+        $this->outgoing      = $outgoing;
         $this->serviceName   = $serviceName;
         $this->elapsedTimeMs = $elapsedTimeMs;
 
@@ -38,18 +38,13 @@ class HttpResponseEvent extends HttpEvent
     {
         $status = $this->response->status();
 
-        switch ($this->direction) {
-            case self::DIRECTION_OUT:
-                $message = "Sent $status response";
-                break;
-            case self::DIRECTION_IN:
-                $message = "Received $status response";
-                if ($this->serviceName) {
-                    $message .= " from $this->serviceName";
-                }
-                break;
-            default:
-                $message = "Response $status";
+        if ($this->outgoing) {
+            $message = "Sent $status response";
+        } else {
+            $message = "Received $status response";
+            if ($this->serviceName) {
+                $message .= " from $this->serviceName";
+            }
         }
 
         $elapsedTime = number_format($this->elapsedTimeMs, 2);
@@ -63,7 +58,7 @@ class HttpResponseEvent extends HttpEvent
         $data = [
             'status'     => $this->response->status(),
             'request_id' => $this->getRequestId(),
-            'direction'  => $this->direction,
+            'direction'  => $this->outgoing ? self::DIRECTION_OUT : self::DIRECTION_IN,
             'time_ms'    => $this->elapsedTimeMs,
         ];
 

@@ -6,8 +6,7 @@ use Session;
 
 abstract class HttpEvent extends AbstractEvent
 {
-    protected $requestId;
-    protected $direction;
+    protected $outgoing;
     protected $serviceName;
     protected $requestStartTime;
 

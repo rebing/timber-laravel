@@ -4,7 +4,6 @@ namespace Rebing\Timber\Tests\Requests\Events;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Rebing\Timber\Requests\Events\HttpEvent;
 use Rebing\Timber\Requests\Events\HttpRequestEvent;
 use Rebing\Timber\Requests\RequestIdTrait;
 use Rebing\Timber\Tests\TestCase;
@@ -19,7 +18,7 @@ class HttpRequestEventTest extends TestCase
         $request     = new Request();
         $serviceName = str_random();
 
-        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT, $serviceName);
+        $event = new HttpRequestEvent($request, true, $serviceName);
 
         $message = "Sent GET / to $serviceName";
         $this->assertEquals($message, $event->getMessage());
@@ -32,7 +31,7 @@ class HttpRequestEventTest extends TestCase
     {
         $request = new Request();
 
-        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_IN);
+        $event = new HttpRequestEvent($request, false);
 
         $message = "Received GET /";
         $this->assertEquals($message, $event->getMessage());
@@ -48,7 +47,7 @@ class HttpRequestEventTest extends TestCase
         $request->merge($body);
         $direction = HttpRequestEvent::DIRECTION_OUT;
 
-        $event = new HttpRequestEvent($request, $direction);
+        $event = new HttpRequestEvent($request, true);
 
         $eventData    = $event->getEvent();
         $reqId        = Session::get(RequestIdTrait::getRequestSessionKey());
@@ -77,7 +76,7 @@ class HttpRequestEventTest extends TestCase
     {
         $request = new Request();
 
-        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT);
+        $event = new HttpRequestEvent($request, true);
 
         $contextData  = $event->getContext();
         $expectedData = [
@@ -103,7 +102,7 @@ class HttpRequestEventTest extends TestCase
     {
         $request = new Request();
 
-        $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT);
+        $event = new HttpRequestEvent($request, true);
 
         $requestId = $event->getRequestId();
         $this->assertNotNull($requestId);

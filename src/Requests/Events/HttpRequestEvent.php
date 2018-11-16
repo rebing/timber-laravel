@@ -12,13 +12,13 @@ class HttpRequestEvent extends HttpEvent
     /**
      * HttpRequestEvent constructor.
      * @param Request $request
-     * @param string $direction - incoming or outgoing
+     * @param bool $outgoing
      * @param null|string $serviceName - An optional description, where the request or response is sent
      */
-    public function __construct($request, string $direction, ?string $serviceName = null)
+    public function __construct($request, bool $outgoing, ?string $serviceName = null)
     {
         $this->request     = $request;
-        $this->direction   = $direction;
+        $this->outgoing    = $outgoing;
         $this->serviceName = $serviceName;
 
         $this->setRequestId();
@@ -37,18 +37,13 @@ class HttpRequestEvent extends HttpEvent
         $method = $this->request->getMethod();
         $path   = $this->request->path();
 
-        switch ($this->direction) {
-            case self::DIRECTION_OUT:
-                $message = "Sent $method $path";
-                if ($this->serviceName) {
-                    $message .= " to $this->serviceName";
-                }
-                break;
-            case self::DIRECTION_IN:
-                $message = "Received $method $path";
-                break;
-            default:
-                $message = "Request $method $path";
+        if($this->outgoing) {
+            $message = "Sent $method $path";
+            if ($this->serviceName) {
+                $message .= " to $this->serviceName";
+            }
+        } else {
+            $message = "Received $method $path";
         }
 
         return $message;
@@ -61,7 +56,7 @@ class HttpRequestEvent extends HttpEvent
             'path'       => $this->request->path(),
             'scheme'     => $this->request->getScheme(),
             'request_id' => $this->getRequestId(),
-            'direction'  => $this->direction,
+            'direction'  => $this->outgoing ? self::DIRECTION_OUT : self::DIRECTION_IN,
         ];
 
         if (count($this->request->headers->all())) {

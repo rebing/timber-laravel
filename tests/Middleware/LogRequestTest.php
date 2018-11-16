@@ -23,10 +23,27 @@ class LogRequestTest extends TestCase
         $request->setMethod('POST');
         $request->merge($data);
 
+        $this->expectsJobs([HttpRequestEvent::class]);
+        $middleware = new LogRequest();
+        $middleware->handle($request, function($req) {
+            return new Response();
+        });
+    }
+
+    /**
+     * @group testing
+     * @test
+     */
+    public function testSendsANewLogToTimberAndLogsResponse()
+    {
+        $request = new Request();
+        $response = new Response();
+
         $this->expectsJobs([HttpRequestEvent::class, HttpResponseEvent::class]);
         $middleware = new LogRequest();
         $middleware->handle($request, function($req) {
             return new Response();
         });
+        $middleware->terminate($request, $response);
     }
 }
