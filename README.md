@@ -4,17 +4,76 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 [![Build Status][ico-travis]][link-travis]
 
-This is where your description should go. Take a look at [contributing.md](contributing.md) to see a to do list.
+A Laravel 5+ wrapper for the [Timber Logger](https://timber.io/) service. Use it to log HTTP requests or custom events to Timber.
 
 ## Installation
 
-Via Composer
-
+**1.** Require the package via Composer
 ``` bash
 $ composer require rebing/timber
 ```
 
+**2.** Laravel 5.5+ will autodiscover the package, for older versions add the
+following service provider
+```php
+Rebing\Timber\TimberServiceProvider::class,
+```
+
+and alias
+```php
+'Timber' => 'Rebing\Timber\Support\Facades\Timber',
+```
+
+in your `config/app.php` file.
+
+**3.** Publish the configuration file
+```bash
+$ php artisan vendor:publish --provider="Rebing\Timber\TimberServiceProvider"
+```
+
+**4.** Review the configuration file
+```
+config/graphql.php
+```
+and add your Timber API key to `.env`
+
 ## Usage
+
+### HTTP Requests
+
+To log HTTP requests use the `Rebing\Timber\Middleware\LogRequest::class` middleware. 
+This will log all incoming requests and responses, including context and Auth data.
+
+For example, you can add it to `Kernel.php`:
+
+```php
+class Kernel extends HttpKernel
+{
+    /**
+     * The application's global HTTP middleware stack.
+     *
+     * These middleware are run during every request to your application.
+     */
+    protected $middleware = [
+        Rebing\Timber\Middleware\LogRequest::class,
+    ];
+}
+```
+
+### Custom Events
+
+You can also log custom data. Context will be added automatically.
+```php
+use Rebing\Timber\Requests\Events\CustomEvent;
+
+$data = [
+    'some' => 'data',
+];
+
+$customEvent = new CustomEvent('Log message', 'custom', $data);
+dispatch($customEvent);
+// Or $customEvent->send();
+```
 
 ## Change log
 
@@ -23,7 +82,7 @@ Please see the [changelog](changelog.md) for more information on what has change
 ## Testing
 
 ``` bash
-$ composer test
+$ phpunit
 ```
 
 ## Contributing

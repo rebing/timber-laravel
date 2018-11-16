@@ -15,25 +15,27 @@ class HttpRequestEvent extends HttpEvent
      * @param string $direction - incoming or outgoing
      * @param null|string $serviceName - An optional description, where the request or response is sent
      */
-    public function __construct(Request $request, string $direction, ?string $serviceName = null)
+    public function __construct($request, string $direction, ?string $serviceName = null)
     {
-        $this->request = $request;
-        $this->direction = $direction;
+        $this->request     = $request;
+        $this->direction   = $direction;
         $this->serviceName = $serviceName;
 
-        $this->startEvent();
-    }
-
-    protected function startEvent()
-    {
         $this->setRequestId();
         $this->setRequestStartTime();
+    }
+
+    protected function setRequestId(): string
+    {
+        $reqId = parent::setRequestId();
+        $this->request->headers->set('x-request-id', $reqId);
+        return $reqId;
     }
 
     public function getMessage(): string
     {
         $method = $this->request->getMethod();
-        $path = $this->request->path();
+        $path   = $this->request->path();
 
         switch ($this->direction) {
             case self::DIRECTION_OUT:
@@ -82,6 +84,8 @@ class HttpRequestEvent extends HttpEvent
                 $data['body'] = $this->request->json();
             } elseif ($this->request->isXmlHttpRequest()) {
                 $data['body'] = $this->request->getContent();
+            } else {
+                $data['body'] = json_encode($this->request->all());
             }
         }
 

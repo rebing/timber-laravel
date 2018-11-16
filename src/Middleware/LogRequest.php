@@ -29,10 +29,12 @@ class LogRequest
      */
     public function handle(Request $request, Closure $next)
     {
-        dispatch(new HttpRequestEvent($request, HttpEvent::DIRECTION_IN));
+        $reqEvent = new HttpRequestEvent($request, HttpEvent::DIRECTION_IN);
+        dispatch($reqEvent);
 
         $response = $next($request);
-        dispatch(new HttpResponseEvent($response, HttpEvent::DIRECTION_OUT));
+        $responseEvent = new HttpResponseEvent($response, HttpEvent::DIRECTION_OUT, $reqEvent->getElapsedTimeInMs());
+        dispatch($responseEvent);
 
         return $response;
     }

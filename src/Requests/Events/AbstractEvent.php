@@ -6,23 +6,25 @@ use Auth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Rebing\Timber\Requests\Contexts\HttpContext;
+use Rebing\Timber\Requests\Contexts\SystemContext;
+use Rebing\Timber\Requests\Contexts\UserContext;
 use Rebing\Timber\Requests\LogLine;
+use Rebing\Timber\Requests\RequestIdTrait;
 
 abstract class AbstractEvent implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue;
-
-    protected $userContext;
+    use Queueable, InteractsWithQueue, RequestIdTrait;
 
     public function handle()
     {
-        $this->send();
+        return $this->send();
     }
 
     public function send()
     {
         $log = new LogLine();
-        $log->json(
+        return $log->json(
             $this->getMessage(),
             $this->getContext(),
             $this->getEvent(),
@@ -39,46 +41,22 @@ abstract class AbstractEvent implements ShouldQueue
 
     abstract public function getEvent(): array;
 
-    abstract public function getContext(): array;
-
-    protected function getSystemContext(): array
+    public function getContext(): array
     {
-        $hostName = gethostname();
+        $httpContext = new HttpContext();
+        $systemContext = new SystemContext();
+        $userContext = new UserContext();
 
-        return [
-            'hostname' => $hostName,
-            'ip'       => gethostbyname($hostName),
-            'pid'      => getmypid(),
-        ];
-    }
+        $data = array_merge(
+            $httpContext->getData(),
+            $systemContext->getData()
+        );
 
-    protected function getUserContext(): ?array
-    {
-        if ($this->userContext) {
-            return $this->userContext;
+        $user = $userContext->getData();
+        if (count($user)) {
+            $data = array_merge($data, $user);
         }
 
-        if (Auth::check()) {
-            $user = Auth::user();
-            $data = [
-                'id' => Auth::id(),
-            ];
-
-            if (isset($user->name)) {
-                $data['name'] = $user->name;
-            }
-            if (isset($user->email)) {
-                $data['email'] = $user->email;
-            }
-
-            return $data;
-        }
-
-        return null;
-    }
-
-    public function setUserContext(array $data): void
-    {
-        $this->userContext = $data;
+        return $data;
     }
 }

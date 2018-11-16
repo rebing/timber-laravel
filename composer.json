@@ -1,5 +1,5 @@
 {
-    "name": "rebing/timber",
+    "name": "rebing/timber-laravel",
     "description": "Laravel package for communicating with Timber (timber.io) logger API",
     "license": "MIT",
     "authors": [

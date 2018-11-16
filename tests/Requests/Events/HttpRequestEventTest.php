@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Rebing\Timber\Requests\Events\HttpEvent;
 use Rebing\Timber\Requests\Events\HttpRequestEvent;
+use Rebing\Timber\Requests\RequestIdTrait;
 use Rebing\Timber\Tests\TestCase;
 
 class HttpRequestEventTest extends TestCase
@@ -15,7 +16,7 @@ class HttpRequestEventTest extends TestCase
      */
     public function testCreatesANewOutgoingRequestEventAndGetsTheMessage()
     {
-        $request = new Request();
+        $request     = new Request();
         $serviceName = str_random();
 
         $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT, $serviceName);
@@ -43,18 +44,27 @@ class HttpRequestEventTest extends TestCase
     public function testCreatesANewRequestEventAndGetsEventData()
     {
         $request = new Request();
+        $body    = ['key' => 'value'];
+        $request->merge($body);
         $direction = HttpRequestEvent::DIRECTION_OUT;
 
         $event = new HttpRequestEvent($request, $direction);
 
-        $eventData = $event->getEvent();
+        $eventData    = $event->getEvent();
+        $reqId        = Session::get(RequestIdTrait::getRequestSessionKey());
         $expectedData = [
             'http_request' => [
-                'method'       => 'GET',
-                'path'         => '/',
-                'scheme'       => 'http',
-                'request_id'   => Session::get(HttpEvent::SESSION_REQUEST_KEY),
-                'direction'    => $direction,
+                'method'     => 'GET',
+                'path'       => '/',
+                'scheme'     => 'http',
+                'request_id' => $reqId,
+                'direction'  => $direction,
+                'body'       => json_encode($body),
+                'headers'    => [
+                    'x-request-id' => [
+                        $reqId,
+                    ],
+                ],
             ],
         ];
         $this->assertEquals($expectedData, $eventData);
@@ -69,13 +79,13 @@ class HttpRequestEventTest extends TestCase
 
         $event = new HttpRequestEvent($request, HttpEvent::DIRECTION_OUT);
 
-        $contextData = $event->getContext();
+        $contextData  = $event->getContext();
         $expectedData = [
             'http'   => [
                 'method'      => 'GET',
                 'path'        => '/',
                 'remote_addr' => request()->ip(),
-                'request_id'  => Session::get(HttpEvent::SESSION_REQUEST_KEY),
+                'request_id'  => Session::get(RequestIdTrait::getRequestSessionKey()),
             ],
             'system' => [
                 'hostname' => gethostname(),

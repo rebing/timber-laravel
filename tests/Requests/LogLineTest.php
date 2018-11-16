@@ -30,5 +30,4 @@ class LogLineTest extends TestCase
 
         $this->assertEquals('Accepted logs', $response);
     }
-
 }

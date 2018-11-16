@@ -9,7 +9,7 @@ use Rebing\Timber\Timber;
 class LogLine extends Timber
 {
 
-    const PAYLOAD_SCHEMA = 'https://raw.githubusercontent.com/timberio/log-event-json-schema/v3.1.3/schema.json';
+    const PAYLOAD_SCHEMA = 'https://raw.githubusercontent.com/timberio/log-event-json-schema/v4.1.0/schema.json';
 
     const LOG_LEVEL_DEBUG = 'debug';
     const LOG_LEVEL_INFO = 'info';
@@ -28,9 +28,14 @@ class LogLine extends Timber
             'dt'      => Carbon::now()->toIso8601ZuluString(),
             'message' => $message,
             'level'   => $level,
-            'context' => $context,
-            'event'   => $event,
         ];
+
+        if (count($context)) {
+            $data['context'] = $context;
+        }
+        if (count($event)) {
+            $data['event'] = $event;
+        }
 
         $options = [
             RequestOptions::JSON => [$data],

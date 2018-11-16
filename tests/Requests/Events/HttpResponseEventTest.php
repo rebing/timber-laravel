@@ -5,10 +5,10 @@ namespace Rebing\Timber\Tests\Requests\Events;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
-use function number_format;
 use Rebing\Timber\Requests\Events\HttpEvent;
 use Rebing\Timber\Requests\Events\HttpRequestEvent;
 use Rebing\Timber\Requests\Events\HttpResponseEvent;
+use Rebing\Timber\Requests\RequestIdTrait;
 use Rebing\Timber\Tests\TestCase;
 
 class HttpResponseEventTest extends TestCase
@@ -23,7 +23,7 @@ class HttpResponseEventTest extends TestCase
 
         $this->serviceName = str_random();
         // A response must always have a preceding request
-        $request = new Request();
+        $request            = new Request();
         $this->requestEvent = new HttpRequestEvent($request, HttpEvent::DIRECTION_IN, $this->serviceName);
     }
 
@@ -32,12 +32,12 @@ class HttpResponseEventTest extends TestCase
      */
     public function testCreatesANewOutgoingResponseEventAndGetsTheMessage()
     {
-        $response = new Response();
-        $elapsedTime = mt_rand(10,100);
+        $response    = new Response();
+        $elapsedTime = $this->requestEvent->getElapsedTimeInMs();
 
-        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_OUT, $this->serviceName, $elapsedTime);
+        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_OUT, $elapsedTime, $this->serviceName);
 
-        $timeMs = number_format($elapsedTime, 2);
+        $timeMs  = number_format($elapsedTime, 2);
         $message = "Sent 200 response in {$timeMs}ms";
         $this->assertEquals($message, $event->getMessage());
     }
@@ -47,12 +47,12 @@ class HttpResponseEventTest extends TestCase
      */
     public function testCreatesANewIncomingResponseEventAndGetsTheMessage()
     {
-        $response = new Response();
-        $elapsedTime = mt_rand(10,100);
+        $response    = new Response();
+        $elapsedTime = $this->requestEvent->getElapsedTimeInMs();
 
-        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_IN, $this->serviceName, $elapsedTime);
+        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_IN, $elapsedTime, $this->serviceName);
 
-        $timeMs = number_format($elapsedTime, 2);
+        $timeMs  = number_format($elapsedTime, 2);
         $message = "Received 200 response from $this->serviceName in {$timeMs}ms";
         $this->assertEquals($message, $event->getMessage());
     }
@@ -60,23 +60,28 @@ class HttpResponseEventTest extends TestCase
     /**
      * @test
      */
-    public function testCreatesANewRequestEventAndGetsEventData()
+    public function testCreatesANewResponseEventAndGetsEventData()
     {
-        $request = new Request();
-        $direction = HttpRequestEvent::DIRECTION_OUT;
+        $response    = new Response();
+        $elapsedTime = $this->requestEvent->getElapsedTimeInMs();
+        $direction   = HttpEvent::DIRECTION_OUT;
 
-        $event = new HttpRequestEvent($request, $direction);
+        $event = new HttpResponseEvent($response, $direction, $elapsedTime);
 
         $eventData = $event->getEvent();
+        $headers   = $eventData['http_response']['headers'];
+        unset($eventData['http_response']['headers']);
+        $reqId = Session::get(RequestIdTrait::getRequestSessionKey());
+
         $expectedData = [
-            'http_request' => [
-                'method'       => 'GET',
-                'path'         => '/',
-                'scheme'       => 'http',
-                'request_id'   => Session::get(HttpEvent::SESSION_REQUEST_KEY),
-                'direction'    => $direction,
+            'http_response' => [
+                'time_ms'    => $elapsedTime,
+                'request_id' => $reqId,
+                'direction'  => $direction,
+                'status'     => 200,
             ],
         ];
+        $this->assertEquals($reqId, $headers['x-request-id'][0]);
         $this->assertEquals($expectedData, $eventData);
     }
 }
