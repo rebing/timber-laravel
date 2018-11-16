@@ -97,6 +97,5 @@ class HttpRequestEventTest extends TestCase
 
         $requestId = $event->getRequestId();
         $this->assertNotNull($requestId);
-        $this->assertNotNull(Session::get(HttpEvent::SESSION_REQUEST . $requestId . '_time'));
     }
 }

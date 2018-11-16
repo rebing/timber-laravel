@@ -4,11 +4,12 @@ namespace Rebing\Timber\Tests\Requests\Events;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Session;
+use function number_format;
 use Rebing\Timber\Requests\Events\HttpEvent;
 use Rebing\Timber\Requests\Events\HttpRequestEvent;
 use Rebing\Timber\Requests\Events\HttpResponseEvent;
 use Rebing\Timber\Tests\TestCase;
-use function str_random;
 
 class HttpResponseEventTest extends TestCase
 {
@@ -32,11 +33,13 @@ class HttpResponseEventTest extends TestCase
     public function testCreatesANewOutgoingResponseEventAndGetsTheMessage()
     {
         $response = new Response();
+        $elapsedTime = mt_rand(10,100);
 
-        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_OUT, $this->serviceName);
+        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_OUT, $this->serviceName, $elapsedTime);
 
-        $message = "Sent 200 response in ";
-        $this->assertStringStartsWith($message, $event->getMessage());
+        $timeMs = number_format($elapsedTime, 2);
+        $message = "Sent 200 response in {$timeMs}ms";
+        $this->assertEquals($message, $event->getMessage());
     }
 
     /**
@@ -45,15 +48,16 @@ class HttpResponseEventTest extends TestCase
     public function testCreatesANewIncomingResponseEventAndGetsTheMessage()
     {
         $response = new Response();
+        $elapsedTime = mt_rand(10,100);
 
-        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_IN, $this->serviceName);
+        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_IN, $this->serviceName, $elapsedTime);
 
-        $message = "Received 200 response from $this->serviceName in ";
-        $this->assertStringStartsWith($message, $event->getMessage());
+        $timeMs = number_format($elapsedTime, 2);
+        $message = "Received 200 response from $this->serviceName in {$timeMs}ms";
+        $this->assertEquals($message, $event->getMessage());
     }
 
     /**
-     * @group testing
      * @test
      */
     public function testCreatesANewRequestEventAndGetsEventData()

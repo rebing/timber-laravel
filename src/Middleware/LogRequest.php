@@ -6,9 +6,11 @@ use Closure;
 use Illuminate\Http\Request;
 use Rebing\Timber\Requests\Events\HttpEvent;
 use Rebing\Timber\Requests\Events\HttpRequestEvent;
+use Rebing\Timber\Requests\Events\HttpResponseEvent;
 
 /**
- * Middleware (beforeware) that logs the incoming request data to Timber
+ * Middleware that logs the incoming request and
+ * outgoing response data to Timber
  *
  * Class LogTimberRequest
  * @package Rebing\Timber\Middleware
@@ -29,6 +31,9 @@ class LogRequest
     {
         dispatch(new HttpRequestEvent($request, HttpEvent::DIRECTION_IN));
 
-        return $next($request);
+        $response = $next($request);
+        dispatch(new HttpResponseEvent($response, HttpEvent::DIRECTION_OUT));
+
+        return $response;
     }
 }
