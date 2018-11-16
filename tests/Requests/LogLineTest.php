@@ -8,6 +8,7 @@ use Rebing\Timber\Tests\TestCase;
 class LogLineTest extends TestCase
 {
     /**
+     * @group guzzle-request
      * @test
      */
     public function testCreatesNewJsonLogLine()

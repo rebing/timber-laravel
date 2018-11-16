@@ -58,6 +58,7 @@ class CustomEventTest extends TestCase
     }
 
     /**
+     * @group guzzle-request
      * @test
      */
     public function testCreatesNewJsonLogLineFromCustomEvent()
