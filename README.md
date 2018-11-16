@@ -102,14 +102,12 @@ If you discover any security related issues, please email mikk.nurges@rebing.ee 
 
 MIT. Please see the [license file](license.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/rebing/timber.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/rebing/timber.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/rebing/timber/master.svg?style=flat-square
-[ico-styleci]: https://styleci.io/repos/12345678/shield
+[ico-version]: https://img.shields.io/packagist/v/rebing/timber-laravel.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/rebing/timber-laravel.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/rebing/timber-laravel/master.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/rebing/timber-laravel
 [link-downloads]: https://packagist.org/packages/rebing/timber-laravel
-[link-travis]: https://travis-ci.org/rebing/timber
-[link-styleci]: https://styleci.io/repos/12345678
+[link-travis]: https://travis-ci.org/rebing/timber-laravel
 [link-author]: https://github.com/rebing
 [link-contributors]: ../../contributors]
