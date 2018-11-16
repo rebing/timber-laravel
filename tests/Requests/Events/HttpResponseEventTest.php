@@ -24,7 +24,7 @@ class HttpResponseEventTest extends TestCase
         $this->serviceName = str_random();
         // A response must always have a preceding request
         $request            = new Request();
-        $this->requestEvent = new HttpRequestEvent($request, HttpEvent::DIRECTION_IN, $this->serviceName);
+        $this->requestEvent = new HttpRequestEvent($request, false, $this->serviceName);
     }
 
     /**
@@ -35,7 +35,7 @@ class HttpResponseEventTest extends TestCase
         $response    = new Response();
         $elapsedTime = $this->requestEvent->getElapsedTimeInMs();
 
-        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_OUT, $elapsedTime, $this->serviceName);
+        $event = new HttpResponseEvent($response, true, $elapsedTime, $this->serviceName);
 
         $timeMs  = number_format($elapsedTime, 2);
         $message = "Sent 200 response in {$timeMs}ms";
@@ -50,7 +50,7 @@ class HttpResponseEventTest extends TestCase
         $response    = new Response();
         $elapsedTime = $this->requestEvent->getElapsedTimeInMs();
 
-        $event = new HttpResponseEvent($response, HttpEvent::DIRECTION_IN, $elapsedTime, $this->serviceName);
+        $event = new HttpResponseEvent($response, false, $elapsedTime, $this->serviceName);
 
         $timeMs  = number_format($elapsedTime, 2);
         $message = "Received 200 response from $this->serviceName in {$timeMs}ms";
@@ -66,7 +66,7 @@ class HttpResponseEventTest extends TestCase
         $elapsedTime = $this->requestEvent->getElapsedTimeInMs();
         $direction   = HttpEvent::DIRECTION_OUT;
 
-        $event = new HttpResponseEvent($response, $direction, $elapsedTime);
+        $event = new HttpResponseEvent($response, true, $elapsedTime);
 
         $eventData = $event->getEvent();
         $headers   = $eventData['http_response']['headers'];
