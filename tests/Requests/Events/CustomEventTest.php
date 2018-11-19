@@ -10,15 +10,19 @@ class CustomEventTest extends TestCase
     private $message;
     private $key;
     private $data;
+    private $context;
 
     public function setUp()
     {
         parent::setUp();
 
         $this->message = str_random();
-        $this->key = str_random();
-        $this->data = [
+        $this->key     = str_random();
+        $this->data    = [
             'test' => 'value',
+        ];
+        $this->context = [
+            'key' => str_random(),
         ];
     }
 
@@ -27,7 +31,7 @@ class CustomEventTest extends TestCase
      */
     public function testCreateACustomEventAndGetTheMessage()
     {
-        $event = new CustomEvent($this->message, $this->key, $this->data);
+        $event = new CustomEvent($this->message, $this->key, $this->data, $this->context);
 
         $this->assertEquals($this->message, $event->getMessage());
     }
@@ -37,7 +41,7 @@ class CustomEventTest extends TestCase
      */
     public function testCreateACustomEventAndGetTheEventData()
     {
-        $event = new CustomEvent($this->message, $this->key, $this->data);
+        $event = new CustomEvent($this->message, $this->key, $this->data, $this->context);
 
         $eventData = [
             'custom' => [
@@ -52,9 +56,14 @@ class CustomEventTest extends TestCase
      */
     public function testCreateACustomEventAndGetTheContext()
     {
-        $event = new CustomEvent($this->message, $this->key, $this->data);
+        $event = new CustomEvent($this->message, $this->key, $this->data, $this->context);
 
-        $this->assertEquals([], $event->getContext());
+        $contextData = [
+            'custom' => [
+                $this->key => $this->context,
+            ],
+        ];
+        $this->assertEquals($contextData, $event->getContext());
     }
 
     /**
@@ -63,7 +72,7 @@ class CustomEventTest extends TestCase
      */
     public function testCreatesNewJsonLogLineFromCustomEvent()
     {
-        $event = new CustomEvent(str_random(), str_random(), ['key' => 'value']);
+        $event    = new CustomEvent(str_random(), str_random(), ['key' => 'value']);
         $response = $event->send();
 
         $this->assertEquals('Accepted logs', $response);

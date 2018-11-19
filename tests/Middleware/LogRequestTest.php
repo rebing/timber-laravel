@@ -31,7 +31,6 @@ class LogRequestTest extends TestCase
     }
 
     /**
-     * @group testing
      * @test
      */
     public function testSendsANewLogToTimberAndLogsResponse()

@@ -40,6 +40,7 @@ class LogLine extends Timber
         $options = [
             RequestOptions::JSON => [$data],
         ];
+        dd($data);
 
         return $this->doRequest(self::METHOD_POST, 'frames', $options);
     }
