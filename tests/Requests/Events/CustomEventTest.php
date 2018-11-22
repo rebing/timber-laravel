@@ -72,7 +72,7 @@ class CustomEventTest extends TestCase
      */
     public function testCreatesNewJsonLogLineFromCustomEvent()
     {
-        $event    = new CustomEvent(str_random(), str_random(), ['key' => 'value']);
+        $event    = new CustomEvent(str_random(), str_random(), ['key', 'some' => 'value']);
         $response = $event->send();
 
         $this->assertEquals('Accepted logs', $response);

@@ -33,12 +33,14 @@ class CustomEvent extends AbstractEvent
     public function getEvent(): array
     {
         if (!count($this->data)) {
-            return [];
+            $this->data = [
+                'message' => $this->message,
+            ];
         }
 
         return [
             'custom' => [
-                $this->type => $this->data,
+                $this->type => (object)$this->data,
             ],
         ];
     }
