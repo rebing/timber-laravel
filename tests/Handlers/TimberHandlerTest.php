@@ -15,10 +15,12 @@ class TimberHandlerTest extends TestCase
      */
     public function testCreatesAndWritesToLogWithNewTimberHandler()
     {
-        $data    = $this->mockResource(str_random());
+        $data = $this->mockResource(str_random(), [], ['key' => 'value']);
         $handler = new TimberHandler();
 
-        $handler->handle($data);
+        $handled = $handler->handle($data);
+
+        $this->assertFalse($handled);
     }
 
     protected function mockResource(
@@ -27,7 +29,7 @@ class TimberHandlerTest extends TestCase
         $extra = [],
         $level = Logger::DEBUG,
         $levelName = 'debug',
-        $channel = ''
+        $channel = 'default'
     ) {
         return [
             'message'    => $message,

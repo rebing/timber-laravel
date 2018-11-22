@@ -9,19 +9,19 @@ class CustomEvent extends AbstractEvent
     protected $message;
     protected $data;
     protected $context;
-    protected $key;
+    protected $type;
 
     /**
      * @param string $message - A descriptive message
-     * @param string $key - The key name of the event
+     * @param string $type - The type name of the event
      * @param array $data - Custom data to be logged
      * @param array $context - Extra context to be added with event
      */
-    public function __construct(string $message, string $key, array $data, array $context = [])
+    public function __construct(string $message, string $type, array $data, array $context = [])
     {
         $this->message = $message;
-        $this->key     = $key;
-        $this->data    = $data;
+        $this->type = $type;
+        $this->data = $data;
         $this->context = $context;
     }
 
@@ -38,7 +38,7 @@ class CustomEvent extends AbstractEvent
 
         return [
             'custom' => [
-                $this->key => $this->data,
+                $this->type => $this->data,
             ],
         ];
     }
@@ -46,7 +46,7 @@ class CustomEvent extends AbstractEvent
     public function getContext(): array
     {
         $defaultData = parent::getContext();
-        $context     = new CustomContext($this->key, $this->context);
+        $context = new CustomContext($this->type, $this->context);
         return array_merge($defaultData, $context->getData());
     }
 }

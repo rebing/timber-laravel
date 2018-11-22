@@ -21,7 +21,7 @@ class TimberHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
-        $key = 'test';
-        dispatch(new CustomEvent($record['message'], $key, $record['extra'], $record['context']));
+        $type = $record['level_name'] . '_' . $record['channel'];
+        dispatch(new CustomEvent($record['message'], $type, $record['extra'], $record['context']));
     }
 }

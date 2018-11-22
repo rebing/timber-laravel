@@ -4,12 +4,12 @@ namespace Rebing\Timber\Requests\Contexts;
 
 class CustomContext extends AbstractContext
 {
-    protected $key;
+    protected $type;
     protected $data;
 
-    public function __construct(string $key, array $data)
+    public function __construct(string $type, array $data)
     {
-        $this->key  = $key;
+        $this->type  = $type;
         $this->data = $data;
     }
 
@@ -21,7 +21,7 @@ class CustomContext extends AbstractContext
 
         return [
             'custom' => [
-                $this->key => $this->data,
+                $this->type => $this->data,
             ],
         ];
     }
