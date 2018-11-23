@@ -45,7 +45,7 @@ class CustomEventTest extends TestCase
 
         $eventData = [
             'custom' => [
-                $this->key => $this->data,
+                $this->key => (object)$this->data,
             ],
         ];
         $this->assertEquals($eventData, $event->getEvent());
@@ -59,11 +59,9 @@ class CustomEventTest extends TestCase
         $event = new CustomEvent($this->message, $this->key, $this->data, $this->context);
 
         $contextData = [
-            'custom' => [
-                $this->key => $this->context,
-            ],
+            $this->key => $this->context,
         ];
-        $this->assertEquals($contextData, $event->getContext());
+        $this->assertEquals($contextData, $event->getContext()['custom']);
     }
 
     /**
