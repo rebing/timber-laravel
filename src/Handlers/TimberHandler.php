@@ -5,6 +5,8 @@ namespace Rebing\Timber\Handlers;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use Rebing\Timber\Requests\Events\CustomEvent;
+use Exception;
+use Rebing\Timber\Requests\Events\ErrorEvent;
 
 class TimberHandler extends AbstractProcessingHandler
 {
@@ -21,10 +23,24 @@ class TimberHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
-        $channel = $record['channel'];
-        $levelName = $record['level_name'];
-        $type = "$channel.$levelName";
+        $type = $record['channel'] . '.' .$record['level_name'];
 
+        if($record['level'] >= Logger::ERROR && isset($record['context']['exception'])
+            && $record['context']['exception'] instanceof Exception) {
+            $this->writeError($record['context']['exception']);
+        } else {
+            $this->writeLog($type, $record);
+        }
+    }
+
+    private function writeLog(string $type, array $record)
+    {
         dispatch(new CustomEvent($record['message'], $type, $record['extra'], $record['context']));
+    }
+
+    private function writeError(Exception $e)
+    {
+        $event = new ErrorEvent($e);
+        $event->send();
     }
 }
