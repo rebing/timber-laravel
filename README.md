@@ -37,6 +37,14 @@ config/graphql.php
 ```
 and add your Timber API key to `.env`
 
+**5.** (Optional) Log incoming requests
+
+Check [HTTP Requests](#http-requests)
+
+**6.** (Optional) Log all messages
+
+Check [Log all messages](#log-all-messages)
+
 ## Usage
 
 ### HTTP Requests
@@ -60,6 +68,25 @@ class Kernel extends HttpKernel
 }
 ```
 
+### Log all messages
+
+This requires Laravel 5.6+
+
+You can leverage Laravel's `Logger` facade to log all messages to Timber.
+
+Add a new channel to `config/logging.php`
+
+```php
+'channels' => [
+  'timber' => [
+    'driver' => 'monolog',
+    'handler' => Rebing\Timber\Handlers\TimberHandler::class,
+  ],
+];
+```
+
+And update your .env with `LOG_CHANNEL=timber`
+
 ### Custom Events
 
 You can also log custom data. Context will be added automatically.
@@ -75,9 +102,13 @@ dispatch($customEvent);
 // Or $customEvent->send();
 ```
 
-## Change log
+### Disable logging
 
-Please see the [changelog](changelog.md) for more information on what has changed recently.
+You can disable sending logs to Timber by updating your .env file with 
+
+```
+TIMBER_ENABLED=false
+```
 
 ## Testing
 
