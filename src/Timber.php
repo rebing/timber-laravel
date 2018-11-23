@@ -20,6 +20,7 @@ class Timber
 
     private $requestUri;
     private $apiKey;
+    private $enabled = true;
 
     /**
      * Timber constructor.
@@ -28,7 +29,8 @@ class Timber
     public function __construct()
     {
         $this->requestUri = self::SERVER_URI;
-        $this->apiKey = config('timber.api_key');
+        $this->apiKey     = config('timber.api_key');
+        $this->enabled    = config('timber.enabled');
 
         if (is_null($this->apiKey)) {
             throw new TimberException('API key not set!');
@@ -37,6 +39,10 @@ class Timber
 
     protected function doRequest(string $method, string $endpoint, array $options = [])
     {
+        if (!$this->enabled) {
+            return '';
+        }
+
         $client = new Client([
             'base_uri' => $this->requestUri,
             'headers'  => [
