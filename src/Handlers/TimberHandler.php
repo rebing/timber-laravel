@@ -23,24 +23,30 @@ class TimberHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
-        $type = $record['channel'] . '.' .$record['level_name'];
-
         if($record['level'] >= Logger::ERROR && isset($record['context']['exception'])
             && $record['context']['exception'] instanceof Exception) {
-            $this->writeError($record['context']['exception']);
+            $this->writeError($record);
         } else {
-            $this->writeLog($type, $record);
+            $this->writeLog($record);
         }
     }
 
-    private function writeLog(string $type, array $record)
+    private function writeLog(array $record)
     {
-        dispatch(new CustomEvent($record['message'], $type, $record['extra'], $record['context'], $record['level']));
+        if(count($record['context']) === 1) {
+            $type = array_keys($record['context'])[0];
+            $extra = array_first($record['context']);
+        } else {
+            $type = $record['channel'] . '.' .$record['level_name'];
+            $extra = $record['context'];
+        }
+
+        dispatch(new CustomEvent($record['message'], $type, $extra, [], $record['level']));
     }
 
-    private function writeError(Exception $e)
+    private function writeError(array $record)
     {
-        $event = new ErrorEvent($e);
+        $event = new ErrorEvent($record['context']['exception'], $record['context']['']);
         $event->send();
     }
 }

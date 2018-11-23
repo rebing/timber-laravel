@@ -78,14 +78,22 @@ Add a new channel to `config/logging.php`
 
 ```php
 'channels' => [
-  'timber' => [
-    'driver' => 'monolog',
-    'handler' => Rebing\Timber\Handlers\TimberHandler::class,
-  ],
+    'timber' => [
+        'driver' => 'monolog',
+        'handler' => Rebing\Timber\Handlers\TimberHandler::class,
+    ],
 ];
 ```
 
 And update your .env with `LOG_CHANNEL=timber`
+
+You can then easily log custom data by providing a message, type and data. For example:
+```php
+$data = [
+    'key' => 'value',
+];
+\Log::info('Some message', ['type' => $data]);
+```
 
 ### Custom Events
 
