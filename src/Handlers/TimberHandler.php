@@ -21,7 +21,10 @@ class TimberHandler extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
-        $type = $record['level_name'] . '_' . $record['channel'];
+        $channel = $record['channel'];
+        $levelName = $record['level_name'];
+        $type = "$channel.$levelName";
+
         dispatch(new CustomEvent($record['message'], $type, $record['extra'], $record['context']));
     }
 }

@@ -10,7 +10,6 @@ use Rebing\Timber\Tests\TestCase;
 class TimberHandlerTest extends TestCase
 {
     /**
-     * @group testing
      * @test
      */
     public function testCreatesAndWritesToLogWithNewTimberHandler()
