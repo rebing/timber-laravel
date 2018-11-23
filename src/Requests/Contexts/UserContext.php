@@ -17,7 +17,7 @@ class UserContext extends AbstractContext
         if (Auth::check()) {
             $user = Auth::user();
             $data = [
-                'id' => Auth::id(),
+                'id' => (string)Auth::id(),
             ];
 
             if (isset($user->name)) {
