@@ -35,7 +35,7 @@ class TimberHandler extends AbstractProcessingHandler
 
     private function writeLog(string $type, array $record)
     {
-        dispatch(new CustomEvent($record['message'], $type, $record['extra'], $record['context']));
+        dispatch(new CustomEvent($record['message'], $type, $record['extra'], $record['context'], $record['level']));
     }
 
     private function writeError(Exception $e)

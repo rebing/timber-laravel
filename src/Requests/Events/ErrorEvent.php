@@ -3,19 +3,38 @@
 namespace Rebing\Timber\Requests\Events;
 
 use Exception;
+use Rebing\Timber\Requests\Contexts\CustomContext;
 
 class ErrorEvent extends AbstractEvent
 {
-    private $exception;
+    const MAX_BACKTRACE_LENGTH = 20;
 
-    public function __construct(Exception $exception)
+    private $exception;
+    private $context;
+
+    public function __construct(Exception $exception, array $context = [])
     {
         $this->exception = $exception;
+        $this->context = $context;
     }
 
     public function getMessage(): string
     {
-        return $this->exception->getMessage();
+        $trace = $this->exception->getTrace();
+
+        $message = 'Exception: "';
+        $message .= $this->exception->getMessage();
+        $message .= '" @ ';
+        if (isset($trace[0])) {
+            if (isset($trace[0]['class']) && $trace[0]['class'] != '') {
+                $message .= $trace[0]['class'];
+                $message .= array_get($trace, 'type', '->');
+            }
+
+            $message .= $trace[0]['function'];
+        }
+
+        return $message;
     }
 
     public function getEvent(): array
@@ -32,24 +51,34 @@ class ErrorEvent extends AbstractEvent
 
     private function getBacktrace(): array
     {
-        return array_map(function($frame) {
-            return [
-                'file' => $frame['file'],
-                'function' => $this->getTraceFunction($frame),
-                'line' => $frame['line'],
-            ];
-        }, $this->exception->getTrace());
+        $backtrace = [];
+
+        foreach ($this->exception->getTrace() as $c => $frame) {
+            if ($c >= self::MAX_BACKTRACE_LENGTH) {
+                break;
+            }
+
+            if (isset($frame['file']) && isset($frame['line'])) {
+                $backtrace[] = [
+                    'file'     => array_get($frame, 'file', 'Unknown'),
+                    'function' => $this->getTraceFunction($frame),
+                    'line'     => array_get($frame, 'line', 1),
+                ];
+            }
+        }
+
+        return $backtrace;
     }
 
     private function getTraceFunction(array $frame): string
     {
-        $function = $frame['class'] . '->' . $frame['function'];
+        $function = $frame['class'] . array_get($frame, 'type', '->') . $frame['function'];
 
-        if(isset($frame['args'])) {
+        if (isset($frame['args'])) {
             $args = [];
-            foreach($frame['args'] as $arg) {
+            foreach ($frame['args'] as $arg) {
                 if (is_string($arg)) {
-                    $arg = strlen($arg) < 200 ? $arg : (substr($arg, 0, 200) . '...');
+                    $arg    = strlen($arg) < 200 ? $arg : (substr($arg, 0, 200) . '...');
                     $args[] = "'" . $arg . "'";
                 } elseif (is_array($arg)) {
                     $args[] = "Array";
@@ -65,10 +94,17 @@ class ErrorEvent extends AbstractEvent
                     $args[] = $arg;
                 }
             }
-            $args = join(", ", $args);
+            $args     = join(", ", $args);
             $function .= '(' . $args . ')';
         }
 
         return $function;
+    }
+
+    public function getContext(): array
+    {
+        $defaultData = parent::getContext();
+        $context = new CustomContext('messages', $this->context);
+        return array_merge($defaultData, $context->getData());
     }
 }

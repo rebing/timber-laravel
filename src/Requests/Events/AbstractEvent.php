@@ -6,6 +6,7 @@ use Auth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Monolog\Logger;
 use Rebing\Timber\Requests\Contexts\HttpContext;
 use Rebing\Timber\Requests\Contexts\SystemContext;
 use Rebing\Timber\Requests\Contexts\UserContext;
@@ -15,6 +16,8 @@ use Rebing\Timber\Requests\RequestIdTrait;
 abstract class AbstractEvent implements ShouldQueue
 {
     use Queueable, InteractsWithQueue, RequestIdTrait;
+
+    protected $logLevel = Logger::INFO;
 
     public function handle()
     {
@@ -34,7 +37,15 @@ abstract class AbstractEvent implements ShouldQueue
 
     public function getLogLevel(): string
     {
-        return LogLine::LOG_LEVEL_INFO;
+        if ($this->logLevel <= Logger::DEBUG) {
+            return LogLine::LOG_LEVEL_DEBUG;
+        } elseif ($this->logLevel <= Logger::NOTICE) {
+            return LogLine::LOG_LEVEL_INFO;
+        } elseif ($this->logLevel <= Logger::WARNING) {
+            return LogLine::LOG_LEVEL_WARN;
+        }
+
+        return LogLine::LOG_LEVEL_ERROR;
     }
 
     abstract public function getMessage(): string;
@@ -43,9 +54,9 @@ abstract class AbstractEvent implements ShouldQueue
 
     public function getContext(): array
     {
-        $httpContext = new HttpContext();
+        $httpContext   = new HttpContext();
         $systemContext = new SystemContext();
-        $userContext = new UserContext();
+        $userContext   = new UserContext();
 
         $data = array_merge(
             $httpContext->getData(),

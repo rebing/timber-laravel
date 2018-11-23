@@ -2,6 +2,7 @@
 
 namespace Rebing\Timber\Requests\Events;
 
+use Monolog\Logger;
 use Rebing\Timber\Requests\Contexts\CustomContext;
 
 class CustomEvent extends AbstractEvent
@@ -16,13 +17,15 @@ class CustomEvent extends AbstractEvent
      * @param string $type - The type name of the event
      * @param array $data - Custom data to be logged
      * @param array $context - Extra context to be added with event
+     * @param int $logLevel
      */
-    public function __construct(string $message, string $type, array $data, array $context = [])
+    public function __construct(string $message, string $type, array $data, array $context = [], $logLevel = Logger::INFO)
     {
         $this->message = $message;
         $this->type = $type;
         $this->data = $data;
         $this->context = $context;
+        $this->logLevel = $logLevel;
     }
 
     public function getMessage(): string
