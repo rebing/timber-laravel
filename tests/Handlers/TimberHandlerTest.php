@@ -11,6 +11,7 @@ use Exception;
 class TimberHandlerTest extends TestCase
 {
     /**
+     * @group guzzle-request
      * @test
      */
     public function testCreatesAndWritesToLogWithNewTimberHandler()
@@ -24,6 +25,7 @@ class TimberHandlerTest extends TestCase
     }
 
     /**
+     * @group guzzle-request
      * @test
      */
     public function testCreatesAndWritesANewErrorWithTimberHandler()
