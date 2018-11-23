@@ -49,6 +49,7 @@ class ErrorEvent extends AbstractEvent
             $args = [];
             foreach($frame['args'] as $arg) {
                 if (is_string($arg)) {
+                    $arg = strlen($arg) < 200 ? $arg : (substr($arg, 0, 200) . '...');
                     $args[] = "'" . $arg . "'";
                 } elseif (is_array($arg)) {
                     $args[] = "Array";

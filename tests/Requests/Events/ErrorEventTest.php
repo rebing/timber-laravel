@@ -9,6 +9,7 @@ use Rebing\Timber\Tests\TestCase;
 class ErrorEventTest extends TestCase
 {
     /**
+     * @group testing
      * @test
      */
     public function testCreatesANewErrorEventAndGetsTheData()
