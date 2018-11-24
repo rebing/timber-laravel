@@ -8,7 +8,6 @@ abstract class HttpEvent extends AbstractEvent
     protected $serviceName;
     protected $requestStartTime;
 
-    const SESSION_REQUEST = 'TIMBER_REQUEST';
     const DIRECTION_OUT = 'outgoing';
     const DIRECTION_IN = 'incoming';
 

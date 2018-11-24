@@ -22,7 +22,7 @@ class HttpContextTest extends TestCase
                 'method'      => 'GET',
                 'path'        => '/',
                 'remote_addr' => request()->ip(),
-                'request_id'  => Session::get(RequestIdTrait::getRequestSessionKey()),
+                'request_id'  => Session::getId(),
             ],
         ];
         $this->assertEquals($expectedData, $contextData);
