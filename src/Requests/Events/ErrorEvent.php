@@ -72,7 +72,7 @@ class ErrorEvent extends AbstractEvent
 
     private function getTraceFunction(array $frame): string
     {
-        $function = $frame['class'] . array_get($frame, 'type', '->') . $frame['function'];
+        $function = array_get($frame, 'class', 'Unknown') . array_get($frame, 'type', '->') . $frame['function'];
 
         if (isset($frame['args'])) {
             $args = [];

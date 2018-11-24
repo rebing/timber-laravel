@@ -11,6 +11,7 @@ class CustomEvent extends AbstractEvent
     protected $data;
     protected $context;
     protected $type;
+    protected $messageMaxLength;
 
     /**
      * @param string $message - A descriptive message
@@ -18,19 +19,27 @@ class CustomEvent extends AbstractEvent
      * @param array $data - Custom data to be logged
      * @param array $context - Extra context to be added with event
      * @param int $logLevel
+     * @param int $messageMaxLength
      */
-    public function __construct(string $message, string $type, array $data, array $context = [], $logLevel = Logger::INFO)
-    {
+    public function __construct(
+        string $message,
+        string $type,
+        array $data,
+        array $context = [],
+        $logLevel = Logger::INFO,
+        int $messageMaxLength = 200
+    ) {
         $this->message = $message;
         $this->type = $type;
         $this->data = $data;
         $this->context = $context;
         $this->logLevel = $logLevel;
+        $this->messageMaxLength = $messageMaxLength;
     }
 
     public function getMessage(): string
     {
-        return $this->message;
+        return substr($this->message, 0, $this->messageMaxLength);
     }
 
     public function getEvent(): array
