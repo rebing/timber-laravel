@@ -46,7 +46,7 @@ class TimberHandler extends AbstractProcessingHandler
 
     private function writeError(array $record)
     {
-        $event = new ErrorEvent($record['context']['exception'], $record['context']['']);
+        $event = new ErrorEvent($record['context']['exception'], array_get($record['context'], 'extra', []));
         $event->send();
     }
 }
