@@ -2,8 +2,6 @@
 
 namespace Rebing\Timber\Requests\Events;
 
-use Session;
-
 abstract class HttpEvent extends AbstractEvent
 {
     protected $outgoing;

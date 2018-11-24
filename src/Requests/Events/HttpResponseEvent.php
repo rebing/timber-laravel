@@ -2,7 +2,7 @@
 
 namespace Rebing\Timber\Requests\Events;
 
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class HttpResponseEvent extends HttpEvent
 {
