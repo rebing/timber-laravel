@@ -26,8 +26,8 @@ class LogLineTest extends TestCase
             ],
         ];
 
-        $logLine  = new LogLine();
-        $response = $logLine->json($message, $context, $event, $level);
+        $logLine  = new LogLine($message, $context, $event, $level);
+        $response = $logLine->json();
 
         $this->assertEquals('Accepted logs', $response);
     }
