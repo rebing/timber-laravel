@@ -11,11 +11,10 @@ use Rebing\Timber\Requests\Contexts\HttpContext;
 use Rebing\Timber\Requests\Contexts\SystemContext;
 use Rebing\Timber\Requests\Contexts\UserContext;
 use Rebing\Timber\Requests\LogLine;
-use Rebing\Timber\Requests\RequestIdTrait;
 
 abstract class AbstractEvent implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, RequestIdTrait;
+    use Queueable, InteractsWithQueue;
 
     protected $logLevel = Logger::INFO;
 

@@ -3,6 +3,7 @@
 namespace Rebing\Timber\Requests\Events;
 
 use Symfony\Component\HttpFoundation\Response;
+use Session;
 
 class HttpResponseEvent extends HttpEvent
 {
@@ -23,15 +24,6 @@ class HttpResponseEvent extends HttpEvent
         $this->outgoing      = $outgoing;
         $this->serviceName   = $serviceName;
         $this->elapsedTimeMs = $elapsedTimeMs;
-
-        $this->setRequestId();
-    }
-
-    protected function setRequestId(): string
-    {
-        $reqId = parent::getRequestId();
-        $this->response->headers->set('x-request-id', $reqId);
-        return $reqId;
     }
 
     public function getMessage(): string
@@ -57,7 +49,7 @@ class HttpResponseEvent extends HttpEvent
     {
         $data = [
             'status'     => $this->response->status(),
-            'request_id' => $this->getRequestId(),
+            'request_id' => Session::getId(),
             'direction'  => $this->outgoing ? self::DIRECTION_OUT : self::DIRECTION_IN,
             'time_ms'    => $this->elapsedTimeMs,
         ];

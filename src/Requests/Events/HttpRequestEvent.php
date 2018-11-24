@@ -3,6 +3,7 @@
 namespace Rebing\Timber\Requests\Events;
 
 use Illuminate\Http\Request;
+use Session;
 
 class HttpRequestEvent extends HttpEvent
 {
@@ -21,15 +22,7 @@ class HttpRequestEvent extends HttpEvent
         $this->outgoing = $outgoing;
         $this->serviceName = $serviceName;
 
-        $this->setRequestId();
         $this->setRequestStartTime();
-    }
-
-    protected function setRequestId(): string
-    {
-        $reqId = parent::setRequestId();
-        $this->request->headers->set('x-request-id', $reqId);
-        return $reqId;
     }
 
     public function getMessage(): string
@@ -55,7 +48,7 @@ class HttpRequestEvent extends HttpEvent
             'method'     => $this->request->getMethod(),
             'path'       => $this->request->path(),
             'scheme'     => $this->request->getScheme(),
-            'request_id' => $this->getRequestId(),
+            'request_id' => Session::getId(),
             'direction'  => $this->outgoing ? self::DIRECTION_OUT : self::DIRECTION_IN,
         ];
 

@@ -2,6 +2,7 @@
 
 namespace Rebing\Timber\Requests\Contexts;
 
+use Session;
 
 class HttpContext extends AbstractContext
 {
@@ -12,7 +13,7 @@ class HttpContext extends AbstractContext
                 'method'      => request()->method(),
                 'path'        => request()->path(),
                 'remote_addr' => request()->ip(),
-                'request_id'  => $this->getRequestId(),
+                'request_id'  => Session::getId(),
             ],
         ];
     }
