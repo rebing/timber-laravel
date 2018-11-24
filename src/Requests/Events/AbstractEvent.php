@@ -26,12 +26,13 @@ abstract class AbstractEvent implements ShouldQueue
 
     public function send(bool $queue = false)
     {
-        $log = new LogLine($this->getMessage(),
+        $log = new LogLine(
+            $this->getMessage(),
             $this->getContext(),
             $this->getEvent(),
             $this->getLogLevel()
         );
-        if($queue) {
+        if ($queue) {
             return dispatch($log);
         }
 
@@ -62,9 +63,9 @@ abstract class AbstractEvent implements ShouldQueue
 
     public function getContext(): array
     {
-        $httpContext   = new HttpContext();
+        $httpContext = new HttpContext();
         $systemContext = new SystemContext();
-        $userContext   = new UserContext();
+        $userContext = new UserContext();
 
         $data = array_merge(
             $httpContext->getData(),
