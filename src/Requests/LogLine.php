@@ -20,13 +20,14 @@ class LogLine extends Timber implements ShouldQueue
     const LOG_LEVEL_WARN = 'warn';
     const LOG_LEVEL_ERROR = 'error';
 
-    private $message, $context, $event, $level;
+    private $message, $context, $event, $level, $dt;
 
     public function __construct(
         string $message,
         array $context = [],
         array $event = [],
-        string $level = self::LOG_LEVEL_INFO
+        string $level = self::LOG_LEVEL_INFO,
+        Carbon $dt = null
     ) {
         parent::__construct();
 
@@ -34,6 +35,7 @@ class LogLine extends Timber implements ShouldQueue
         $this->context = $context;
         $this->event = $event;
         $this->level = $level;
+        $this->dt = $dt ?: Carbon::now()->toIso8601ZuluString();
     }
 
     public function handle()
@@ -50,7 +52,7 @@ class LogLine extends Timber implements ShouldQueue
     {
         $data = [
             '$schema' => self::PAYLOAD_SCHEMA,
-            'dt'      => Carbon::now()->toIso8601ZuluString(),
+            'dt'      => $this->dt,
             'message' => $this->message,
             'level'   => $this->level,
         ];
