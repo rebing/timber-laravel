@@ -18,9 +18,9 @@ class ErrorEventTest extends TestCase
             $arr[0];
         } catch (ErrorException $e) {
             $event = new ErrorEvent($e);
-            $data  = $event->getEvent();
+            $data = $event->getEvent();
 
-            $this->assertEquals('ErrorException', $data['error']['name']);
+            $this->assertEquals('Undefined offset: 0', $data['error']['name']);
             $this->assertEquals('Exception: "Undefined offset: 0" @ Illuminate\Foundation\Bootstrap\HandleExceptions->handleError',
                 $data['error']['message']);
             $this->assertTrue(isset($data['error']['backtrace']));

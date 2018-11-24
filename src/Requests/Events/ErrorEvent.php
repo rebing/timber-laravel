@@ -42,7 +42,7 @@ class ErrorEvent extends AbstractEvent
         $backtrace = $this->getBacktrace();
         return [
             'error' => [
-                'name'      => get_class($this->exception),
+                'name'      => $this->exception->getMessage(),
                 'message'   => $this->getMessage(),
                 'backtrace' => $backtrace,
             ],
@@ -51,28 +51,20 @@ class ErrorEvent extends AbstractEvent
 
     private function getBacktrace(): array
     {
-        $backtrace = [];
+        $backtrace = array_slice(array_map(function($frame) {
+            return [
+                'file'     => $frame['file'] ?? '_UNKNOWN_',
+                'function' => $this->getTraceFunction($frame),
+                'line'     => $frame['line'] ?? 1,
+            ];
+        }, $this->exception->getTrace()), 0, 20);
 
-        foreach ($this->exception->getTrace() as $c => $frame) {
-            if ($c >= self::MAX_BACKTRACE_LENGTH) {
-                break;
-            }
-
-            if (isset($frame['file']) && isset($frame['line'])) {
-                $backtrace[] = [
-                    'file'     => array_get($frame, 'file', 'Unknown'),
-                    'function' => $this->getTraceFunction($frame),
-                    'line'     => array_get($frame, 'line', 1),
-                ];
-            }
-        }
-
-        return $backtrace;
+        return $backtrace ?? [['file' => '_no_trace_', 'line' => 1, 'function' => '_no_trace_']];
     }
 
     private function getTraceFunction(array $frame): string
     {
-        $function = array_get($frame, 'class', 'Unknown') . array_get($frame, 'type', '->') . $frame['function'];
+        $function = ($frame['class'] ?? '_UNKNOWN_') . ($frame['type'] ?? '->') . ($frame['function'] ?? '_UNKNOWN_');
 
         if (isset($frame['args'])) {
             $args = [];

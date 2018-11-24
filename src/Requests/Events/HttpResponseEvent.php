@@ -2,27 +2,37 @@
 
 namespace Rebing\Timber\Requests\Events;
 
-use Symfony\Component\HttpFoundation\Response;
+use Rebing\Timber\Exceptions\TimberException;
 use Session;
+use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 
 class HttpResponseEvent extends HttpEvent
 {
-    /* @var $response Response */
     protected $response;
     protected $elapsedTimeMs;
 
     /**
      * HttpRequestEvent constructor.
-     * @param Response $response
+     * @param $response
      * @param bool $outgoing
-     * @param null|string $serviceName - An optional description, where the request or response is sent
      * @param float|null $elapsedTimeMs - Elapsed time from the request to the response
+     * @param null|string $serviceName - An optional description, where the request or response is sent
+     * @throws TimberException
      */
     public function __construct($response, bool $outgoing, float $elapsedTimeMs, ?string $serviceName = null)
     {
-        $this->response      = $response;
-        $this->outgoing      = $outgoing;
-        $this->serviceName   = $serviceName;
+        if ($response instanceof \GuzzleHttp\Psr7\Response) {
+            $factory = new HttpFoundationFactory();
+            $response = $factory->createResponse($response);
+        }
+
+        if (!($response instanceof \Symfony\Component\HttpFoundation\Response)) {
+            throw new TimberException('Invalid Response. Found: ' . get_class($response));
+        }
+
+        $this->response = $response;
+        $this->outgoing = $outgoing;
+        $this->serviceName = $serviceName;
         $this->elapsedTimeMs = $elapsedTimeMs;
     }
 
@@ -40,7 +50,7 @@ class HttpResponseEvent extends HttpEvent
         }
 
         $elapsedTime = number_format($this->elapsedTimeMs, 2);
-        $message     .= " in {$elapsedTime}ms";
+        $message .= " in {$elapsedTime}ms";
 
         return $message;
     }
@@ -55,7 +65,9 @@ class HttpResponseEvent extends HttpEvent
         ];
 
         if (count($this->response->headers->all())) {
-            $data['headers'] = $this->response->headers->all();
+            $data['headers'] = json_encode(array_map(function ($v) {
+                return $v[0];
+            }, $this->response->headers->all()));
         }
 
         return [

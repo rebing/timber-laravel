@@ -15,7 +15,7 @@ class HttpRequestEventTest extends TestCase
      */
     public function testCreatesANewOutgoingRequestEventAndGetsTheMessage()
     {
-        $request     = new Request();
+        $request = new Request();
         $serviceName = str_random();
 
         $event = new HttpRequestEvent($request, true, $serviceName);
@@ -43,26 +43,50 @@ class HttpRequestEventTest extends TestCase
     public function testCreatesANewRequestEventAndGetsEventData()
     {
         $request = new Request();
-        $body    = ['key' => 'value'];
+        $body = ['key' => 'value'];
         $request->merge($body);
         $direction = HttpRequestEvent::DIRECTION_OUT;
 
         $event = new HttpRequestEvent($request, true);
 
-        $eventData    = $event->getEvent();
-        $reqId        = Session::get(RequestIdTrait::getRequestSessionKey());
+        $eventData = $event->getEvent();
         $expectedData = [
             'http_request' => [
                 'method'     => 'GET',
                 'path'       => '/',
                 'scheme'     => 'http',
-                'request_id' => $reqId,
+                'request_id' => Session::getId(),
                 'direction'  => $direction,
                 'body'       => json_encode($body),
-                'headers'    => [
-                    'x-request-id' => [
-                        $reqId,
-                    ],
+            ],
+        ];
+        $this->assertEquals($expectedData, $eventData);
+    }
+
+    /**
+     * @test
+     */
+    public function testCreatesANewOutgoingGuzzleRequestAndGetsEventData()
+    {
+        $body = ['key' => 'value'];
+        $method = 'POST';
+        $request = new \GuzzleHttp\Psr7\ServerRequest($method, 'http://some.url/', [], json_encode($body));
+        $direction = HttpRequestEvent::DIRECTION_OUT;
+
+        $event = new HttpRequestEvent($request, true);
+
+        $eventData = $event->getEvent();
+        $expectedData = [
+            'http_request' => [
+                'method'         => $method,
+                'host'           => 'some.url',
+                'path'           => '/',
+                'scheme'         => 'http',
+                'request_id'     => Session::getId(),
+                'direction'      => $direction,
+                'body'           => json_encode($body),
+                'headers'        => [
+                    'Host' => 'some.url',
                 ],
             ],
         ];
@@ -78,13 +102,13 @@ class HttpRequestEventTest extends TestCase
 
         $event = new HttpRequestEvent($request, true);
 
-        $contextData  = $event->getContext();
+        $contextData = $event->getContext();
         $expectedData = [
             'http'   => [
                 'method'      => 'GET',
                 'path'        => '/',
                 'remote_addr' => request()->ip(),
-                'request_id'  => Session::get(RequestIdTrait::getRequestSessionKey()),
+                'request_id'  => Session::getId(),
             ],
             'system' => [
                 'hostname' => gethostname(),
@@ -93,18 +117,5 @@ class HttpRequestEventTest extends TestCase
             ],
         ];
         $this->assertEquals($expectedData, $contextData);
-    }
-
-    /**
-     * @test
-     */
-    public function testCreatesANewRequestEventAndGetsTheRequestId()
-    {
-        $request = new Request();
-
-        $event = new HttpRequestEvent($request, true);
-
-        $requestId = $event->getRequestId();
-        $this->assertNotNull($requestId);
     }
 }
