@@ -21,18 +21,18 @@ class HttpResponseEvent extends HttpEvent
      */
     public function __construct($response, bool $outgoing, float $elapsedTimeMs, ?string $serviceName = null)
     {
-        if ($response instanceof \GuzzleHttp\Psr7\Response) {
+        if($response instanceof \GuzzleHttp\Psr7\Response) {
             $factory = new HttpFoundationFactory();
             $response = $factory->createResponse($response);
         }
 
-        if (!($response instanceof \Symfony\Component\HttpFoundation\Response)) {
+        if(!($response instanceof \Symfony\Component\HttpFoundation\Response)) {
             throw new TimberException('Invalid Response. Found: ' . get_class($response));
         }
 
-        $this->response = $response;
-        $this->outgoing = $outgoing;
-        $this->serviceName = $serviceName;
+        $this->response      = $response;
+        $this->outgoing      = $outgoing;
+        $this->serviceName   = $serviceName;
         $this->elapsedTimeMs = $elapsedTimeMs;
     }
 
@@ -50,7 +50,7 @@ class HttpResponseEvent extends HttpEvent
         }
 
         $elapsedTime = number_format($this->elapsedTimeMs, 2);
-        $message .= " in {$elapsedTime}ms";
+        $message     .= " in {$elapsedTime}ms";
 
         return $message;
     }
@@ -65,9 +65,7 @@ class HttpResponseEvent extends HttpEvent
         ];
 
         if (count($this->response->headers->all())) {
-            $data['headers'] = json_encode(array_map(function ($v) {
-                return $v[0];
-            }, $this->response->headers->all()));
+            $data['headers'] = $this->response->headers->all();
         }
 
         return [
