@@ -17,8 +17,8 @@ class HttpRequestEvent extends HttpEvent
      */
     public function __construct($request, bool $outgoing, ?string $serviceName = null)
     {
-        $this->request     = $request;
-        $this->outgoing    = $outgoing;
+        $this->request = $request;
+        $this->outgoing = $outgoing;
         $this->serviceName = $serviceName;
 
         $this->setRequestId();
@@ -35,9 +35,9 @@ class HttpRequestEvent extends HttpEvent
     public function getMessage(): string
     {
         $method = $this->request->getMethod();
-        $path   = $this->request->path();
+        $path = $this->request->path();
 
-        if($this->outgoing) {
+        if ($this->outgoing) {
             $message = "Sent $method $path";
             if ($this->serviceName) {
                 $message .= " to $this->serviceName";
@@ -75,9 +75,11 @@ class HttpRequestEvent extends HttpEvent
             $data['service_name'] = $this->serviceName;
         }
         if (count($this->request->all())) {
+            // JSON
             if ($this->request->isJson()) {
                 $data['body'] = $this->request->json();
-            } elseif ($this->request->isXmlHttpRequest()) {
+            } // XML
+            elseif (in_array($this->request->header('Content-Type'), ['application/xml', 'text/xml'])) {
                 $data['body'] = $this->request->getContent();
             } else {
                 $data['body'] = json_encode($this->request->all());
