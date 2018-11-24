@@ -4,10 +4,14 @@ namespace Rebing\Timber\Requests;
 
 use Carbon\Carbon;
 use GuzzleHttp\RequestOptions;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 use Rebing\Timber\Timber;
 
-class LogLine extends Timber
+class LogLine extends Timber implements ShouldQueue
 {
+    use Queueable, InteractsWithQueue;
 
     const PAYLOAD_SCHEMA = 'https://raw.githubusercontent.com/timberio/log-event-json-schema/v4.1.0/schema.json';
 
@@ -16,25 +20,46 @@ class LogLine extends Timber
     const LOG_LEVEL_WARN = 'warn';
     const LOG_LEVEL_ERROR = 'error';
 
+    private $message, $context, $event, $level;
+
+    public function __construct(
+        string $message,
+        array $context = [],
+        array $event = [],
+        string $level = self::LOG_LEVEL_INFO
+    ) {
+        parent::__construct();
+
+        $this->message = $message;
+        $this->context = $context;
+        $this->event = $event;
+        $this->level = $level;
+    }
+
+    public function handle()
+    {
+        return $this->json();
+    }
+
     /**
      * Send a plain (multi-line) log
      *
      * @param string $message
      */
-    public function json(string $message, array $context = [], array $event = [], string $level = self::LOG_LEVEL_INFO)
+    public function json()
     {
         $data = [
             '$schema' => self::PAYLOAD_SCHEMA,
             'dt'      => Carbon::now()->toIso8601ZuluString(),
-            'message' => $message,
-            'level'   => $level,
+            'message' => $this->message,
+            'level'   => $this->level,
         ];
 
-        if (count($context)) {
-            $data['context'] = $context;
+        if (count($this->context)) {
+            $data['context'] = $this->context;
         }
-        if (count($event)) {
-            $data['event'] = $event;
+        if (count($this->event)) {
+            $data['event'] = $this->event;
         }
 
         $options = [
