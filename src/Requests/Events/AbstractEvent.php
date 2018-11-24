@@ -24,15 +24,23 @@ abstract class AbstractEvent implements ShouldQueue
         return $this->send();
     }
 
-    public function send()
+    public function send(bool $queue = false)
     {
-        $log = new LogLine();
-        return $log->json(
-            $this->getMessage(),
+        $log = new LogLine($this->getMessage(),
             $this->getContext(),
             $this->getEvent(),
             $this->getLogLevel()
         );
+        if($queue) {
+            return dispatch($log);
+        }
+
+        return $log->json();
+    }
+
+    public function queue()
+    {
+        return $this->send(true);
     }
 
     public function getLogLevel(): string

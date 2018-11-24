@@ -50,6 +50,6 @@ class TimberHandler extends AbstractProcessingHandler
         $extra = array_get($record['context'], 'extra', []);
 
         $event = new ErrorEvent($exception, $extra);
-        $event->send();
+        $event->queue();
     }
 }
