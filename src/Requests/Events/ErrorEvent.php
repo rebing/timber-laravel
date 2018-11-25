@@ -3,6 +3,7 @@
 namespace Rebing\Timber\Requests\Events;
 
 use Exception;
+use Monolog\Logger;
 use Rebing\Timber\Requests\Contexts\CustomContext;
 
 class ErrorEvent extends AbstractEvent
@@ -12,10 +13,11 @@ class ErrorEvent extends AbstractEvent
     private $exception;
     private $context;
 
-    public function __construct(Exception $exception, array $context = [])
+    public function __construct(Exception $exception, array $context = [], string $logLevel = Logger::CRITICAL)
     {
         $this->exception = $exception;
         $this->context = $context;
+        $this->logLevel = $logLevel;
     }
 
     public function getMessage(): string
