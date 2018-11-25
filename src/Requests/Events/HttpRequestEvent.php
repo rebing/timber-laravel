@@ -2,6 +2,7 @@
 
 namespace Rebing\Timber\Requests\Events;
 
+use Illuminate\Support\Str;
 use Rebing\Timber\Exceptions\TimberException;
 use Session;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
@@ -88,10 +89,7 @@ class HttpRequestEvent extends HttpEvent
 
         if (count($request->all())) {
             // JSON
-            if ($request->isJson()) {
-                $data['body'] = $request->json();
-            } // XML
-            elseif (in_array($request->header('Content-Type'), ['application/xml', 'text/xml'])) {
+            if (Str::contains($request->header('CONTENT_TYPE'), ['/json', '+json'])) {
                 $data['body'] = substr((string)$request->getContent(), 0, 8192);
             } else {
                 $data['body'] = json_encode($request->all());
