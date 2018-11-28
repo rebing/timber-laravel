@@ -44,7 +44,7 @@ class ErrorEvent extends AbstractEvent
         $backtrace = $this->getBacktrace();
         return [
             'error' => [
-                'name'      => $this->exception->getMessage(),
+                'name'      => substr($this->exception->getMessage(), 0, 256),
                 'message'   => $this->getMessage(),
                 'backtrace' => $backtrace,
             ],
