@@ -92,7 +92,7 @@ class HttpRequestEvent extends HttpEvent
             if (Str::contains($request->header('CONTENT_TYPE'), ['/json', '+json'])) {
                 $data['body'] = substr((string)$request->getContent(), 0, 8192);
             } else {
-                $data['body'] = json_encode($request->all());
+                $data['body'] = substr(json_encode($request->all()), 0, 8192);
             }
         } elseif ($request->getContent()) {
             $data['body'] = substr((string)$request->getContent(), 0, 8192);
