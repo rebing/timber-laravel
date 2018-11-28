@@ -72,7 +72,7 @@ class ErrorEvent extends AbstractEvent
             $args = [];
             foreach ($frame['args'] as $arg) {
                 if (is_string($arg)) {
-                    $arg    = strlen($arg) < 200 ? $arg : (substr($arg, 0, 200) . '...');
+                    $arg    = strlen($arg) < 252 ? $arg : (substr($arg, 0, 252) . '...');
                     $args[] = "'" . $arg . "'";
                 } elseif (is_array($arg)) {
                     $args[] = "Array";
@@ -92,7 +92,7 @@ class ErrorEvent extends AbstractEvent
             $function .= '(' . $args . ')';
         }
 
-        return $function;
+        return substr($function, 0, 256);
     }
 
     public function getContext(): array
