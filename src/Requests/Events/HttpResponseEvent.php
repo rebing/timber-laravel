@@ -38,7 +38,7 @@ class HttpResponseEvent extends HttpEvent
 
     public function getMessage(): string
     {
-        $status = $this->response->status();
+        $status = $this->response->getStatusCode();
 
         if ($this->outgoing) {
             $message = "Sent $status response";
@@ -58,7 +58,7 @@ class HttpResponseEvent extends HttpEvent
     public function getEvent(): array
     {
         $data = [
-            'status'     => $this->response->status(),
+            'status'     => $this->response->getStatusCode(),
             'request_id' => Session::getId(),
             'direction'  => $this->outgoing ? self::DIRECTION_OUT : self::DIRECTION_IN,
             'time_ms'    => $this->elapsedTimeMs,
