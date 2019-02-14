@@ -20,7 +20,7 @@ abstract class AbstractEvent implements ShouldQueue
 
     public function handle()
     {
-        return $this->send();
+        return $this->send(true);
     }
 
     public function send(bool $queue = false)
