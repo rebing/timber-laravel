@@ -6,6 +6,7 @@ use Auth;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\InvalidPayloadException;
 use Monolog\Logger;
 use Rebing\Timber\Requests\Contexts\HttpContext;
 use Rebing\Timber\Requests\Contexts\SystemContext;
@@ -20,7 +21,7 @@ abstract class AbstractEvent implements ShouldQueue
 
     public function handle()
     {
-        return $this->send();
+        return $this->send(true);
     }
 
     public function send(bool $queue = false)
@@ -32,7 +33,11 @@ abstract class AbstractEvent implements ShouldQueue
             $this->getLogLevel()
         );
         if ($queue) {
-            return dispatch($log);
+            try {
+                $job = dispatch($log);
+                return $job;
+            } catch (InvalidPayloadException $e) {
+            }
         }
 
         return $log->json();
@@ -62,9 +67,9 @@ abstract class AbstractEvent implements ShouldQueue
 
     public function getContext(): array
     {
-        $httpContext = new HttpContext();
+        $httpContext   = new HttpContext();
         $systemContext = new SystemContext();
-        $userContext = new UserContext();
+        $userContext   = new UserContext();
 
         $data = array_merge(
             $httpContext->getData(),

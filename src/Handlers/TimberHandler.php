@@ -2,6 +2,7 @@
 
 namespace Rebing\Timber\Handlers;
 
+use Illuminate\Queue\InvalidPayloadException;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use Rebing\Timber\Requests\Events\CustomEvent;
@@ -41,7 +42,12 @@ class TimberHandler extends AbstractProcessingHandler
             $extra = $record['context'];
         }
 
-        dispatch(new CustomEvent($record['message'], $type, $extra, [], $record['level']));
+        $event = new CustomEvent($record['message'], $type, $extra, [], $record['level']);
+        try {
+            dispatch($event);
+        } catch (InvalidPayloadException $e) {
+            $event->send();
+        }
     }
 
     private function writeError(array $record)

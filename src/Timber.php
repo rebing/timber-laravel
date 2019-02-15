@@ -4,6 +4,7 @@ namespace Rebing\Timber;
 
 use GuzzleHttp\Client;
 use Rebing\Timber\Exceptions\TimberException;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Communicates with the Timber logger API (https://api-docs.timber.io/)
@@ -50,7 +51,11 @@ class Timber
             ],
         ]);
 
-        $res = $client->request($method, $endpoint, $options);
+        try {
+            $res = $client->request($method, $endpoint, $options);
+        } catch (GuzzleException $e) {
+            return $e->getMessage();
+        }
 
         return $res->getBody()->getContents();
     }
