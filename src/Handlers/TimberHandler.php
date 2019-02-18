@@ -43,11 +43,7 @@ class TimberHandler extends AbstractProcessingHandler
         }
 
         $event = new CustomEvent($record['message'], $type, $extra, [], $record['level']);
-        try {
-            dispatch($event);
-        } catch (InvalidPayloadException $e) {
-            $event->send();
-        }
+        $event->queue();
     }
 
     private function writeError(array $record)
