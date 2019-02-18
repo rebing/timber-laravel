@@ -33,7 +33,7 @@ $ php artisan vendor:publish --provider="Rebing\Timber\TimberServiceProvider"
 
 **4.** Review the configuration file
 ```
-config/graphql.php
+config/timber.php
 ```
 and add your Timber API key to `.env`
 
