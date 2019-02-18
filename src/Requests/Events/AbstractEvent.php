@@ -3,9 +3,6 @@
 namespace Rebing\Timber\Requests\Events;
 
 use Auth;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\InvalidPayloadException;
 use Monolog\Logger;
 use Rebing\Timber\Requests\Contexts\HttpContext;
@@ -13,16 +10,9 @@ use Rebing\Timber\Requests\Contexts\SystemContext;
 use Rebing\Timber\Requests\Contexts\UserContext;
 use Rebing\Timber\Requests\LogLine;
 
-abstract class AbstractEvent implements ShouldQueue
+abstract class AbstractEvent
 {
-    use Queueable, InteractsWithQueue;
-
     protected $logLevel = Logger::INFO;
-
-    public function handle()
-    {
-        return $this->send(true);
-    }
 
     public function send(bool $queue = false)
     {

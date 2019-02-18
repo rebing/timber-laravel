@@ -36,7 +36,7 @@ class LogRequest
     {
         $this->reqEvent = new HttpRequestEvent($request, false);
         $request->headers->set(self::REQUEST_START_HEADER, $this->reqEvent->getRequestStartTime());
-        dispatch($this->reqEvent);
+        $this->reqEvent->queue();
 
         return $next($request);
     }
@@ -57,6 +57,6 @@ class LogRequest
         $elapsedTimeMs = ($currentTime - $startTime) * 1000;
 
         $responseEvent = new HttpResponseEvent($response, true, $elapsedTimeMs);
-        dispatch($responseEvent);
+        $responseEvent->queue();
     }
 }
