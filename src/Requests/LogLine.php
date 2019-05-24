@@ -35,7 +35,7 @@ class LogLine extends Timber implements ShouldQueue
         $this->context = $context;
         $this->event = $event;
         $this->level = $level;
-        $this->dt = $dt ?: Carbon::now()->toIso8601ZuluString();
+        $this->dt = $dt ?: Carbon::now()->tz('UTC')->format('Y-m-d\TH:i:s.u\Z');
     }
 
     public function handle()
