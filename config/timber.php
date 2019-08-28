@@ -8,4 +8,6 @@ return [
     'enabled' => env('TIMBER_ENABLED', true),
 
     'api_key'   => env('TIMBER_API_KEY'),
+
+    'source_id' => env('TIMBER_SOURCE_ID'),
 ];

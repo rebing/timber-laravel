@@ -21,6 +21,7 @@ class Timber
 
     private $requestUri;
     private $apiKey;
+    private $sourceId;
     private $enabled = true;
 
     /**
@@ -31,7 +32,9 @@ class Timber
     {
         $this->requestUri = self::SERVER_URI;
         $this->apiKey     = config('timber.api_key');
+        $this->sourceId   = config('timber.source_id');
         $this->enabled    = config('timber.enabled');
+
 
         if (is_null($this->apiKey)) {
             throw new TimberException('API key not set!');
@@ -44,8 +47,9 @@ class Timber
             return '';
         }
 
+        $baseURI = $this->requestUri."sources/{$this->sourceId}/";
         $client = new Client([
-            'base_uri' => $this->requestUri,
+            'base_uri' => $baseURI,
             'headers'  => [
                 'Authorization' => 'Basic ' . base64_encode($this->apiKey),
             ],
