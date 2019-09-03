@@ -6,12 +6,13 @@ use Carbon\Carbon;
 use GuzzleHttp\RequestOptions;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Rebing\Timber\Timber;
 
 class LogLine extends Timber implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue;
+    use Dispatchable, Queueable, InteractsWithQueue;
 
     const PAYLOAD_SCHEMA = 'https://raw.githubusercontent.com/timberio/log-event-json-schema/v4.1.0/schema.json';
 
