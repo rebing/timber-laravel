@@ -43,7 +43,7 @@ class TimberHandler extends AbstractProcessingHandler
         }
 
         $event = new CustomEvent($record['message'], $type, $extra, [], $record['level']);
-        $event->queue();
+        $event->dispatch();
     }
 
     private function writeError(array $record)
@@ -52,6 +52,6 @@ class TimberHandler extends AbstractProcessingHandler
         $extra = array_get($record['context'], 'extra', []);
 
         $event = new ErrorEvent($exception, $extra);
-        $event->queue();
+        $event->dispatch();
     }
 }
