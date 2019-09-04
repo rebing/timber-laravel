@@ -2,7 +2,7 @@
 
 namespace Rebing\Timber\Requests\Contexts;
 
-use Session;
+use Illuminate\Support\Facades\Session;
 
 class HttpContext extends AbstractContext
 {

@@ -2,7 +2,7 @@
 
 namespace Rebing\Timber\Requests\Contexts;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class UserContext extends AbstractContext
 {
