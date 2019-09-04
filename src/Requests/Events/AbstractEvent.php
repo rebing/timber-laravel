@@ -2,7 +2,6 @@
 
 namespace Rebing\Timber\Requests\Events;
 
-use Auth;
 use Illuminate\Queue\InvalidPayloadException;
 use Monolog\Logger;
 use Rebing\Timber\Requests\Contexts\HttpContext;
