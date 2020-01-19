@@ -2,8 +2,8 @@
 
 namespace Rebing\Timber\Requests\Events;
 
+use Illuminate\Support\Facades\Session;
 use Rebing\Timber\Exceptions\TimberException;
-use Session;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 
 class HttpResponseEvent extends HttpEvent

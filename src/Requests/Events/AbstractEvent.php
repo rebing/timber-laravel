@@ -2,7 +2,6 @@
 
 namespace Rebing\Timber\Requests\Events;
 
-use Auth;
 use Illuminate\Queue\InvalidPayloadException;
 use Monolog\Logger;
 use Rebing\Timber\Requests\Contexts\HttpContext;
@@ -14,7 +13,7 @@ abstract class AbstractEvent
 {
     protected $logLevel = Logger::INFO;
 
-    public function send(bool $queue = false)
+    public function send(bool $dispatch = false)
     {
         $log = new LogLine(
             $this->getMessage(),
@@ -22,9 +21,9 @@ abstract class AbstractEvent
             $this->getEvent(),
             $this->getLogLevel()
         );
-        if ($queue) {
+        if ($dispatch) {
             try {
-                $job = dispatch($log);
+                $job = dispatch($log->onQueue(config('timber.queue')));
                 return $job;
             } catch (InvalidPayloadException $e) {
             }
@@ -33,7 +32,7 @@ abstract class AbstractEvent
         return $log->json();
     }
 
-    public function queue()
+    public function dispatch()
     {
         return $this->send(true);
     }

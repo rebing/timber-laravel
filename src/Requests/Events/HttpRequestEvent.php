@@ -2,9 +2,9 @@
 
 namespace Rebing\Timber\Requests\Events;
 
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Rebing\Timber\Exceptions\TimberException;
-use Session;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
 
 class HttpRequestEvent extends HttpEvent
