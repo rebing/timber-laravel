@@ -13,9 +13,9 @@
     "keywords": ["Laravel", "Timber", "logging", "log"],
     "require": {
         "php": ">=7.1",
-        "illuminate/support": "5.5.*|5.6.*|5.7.*|5.8.*|^6.0",
+        "illuminate/support": "5.5.*|5.6.*|5.7.*|5.8.*|^6.0|^7.0",
         "guzzlehttp/guzzle": "^6.3",
-        "symfony/psr-http-message-bridge": "^1.1"
+        "symfony/psr-http-message-bridge": "^1.1|^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~7.0",
