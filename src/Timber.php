@@ -47,7 +47,10 @@ class Timber
             return '';
         }
 
-        $baseURI = $this->requestUri."sources/{$this->sourceId}/";
+        if ($this->sourceId) {
+            $baseURI = $this->requestUri."sources/{$this->sourceId}/";
+        }
+        
         $client = new Client([
             'base_uri' => $baseURI,
             'headers'  => [
