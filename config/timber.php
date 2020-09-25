@@ -9,6 +9,9 @@ return [
 
     'api_key'   => env('TIMBER_API_KEY'),
 
+    'source_id' => env('TIMBER_SOURCE_ID'),
+
     // Set the queue name that the jobs will be dispatched to
     'queue' => env('TIMBER_QUEUE'),
 ];
+
