@@ -22,7 +22,7 @@ class TimberHandler extends AbstractProcessingHandler
      * @param  array $record
      * @return void
      */
-    protected function write(array $record)
+    protected function write(array $record): void
     {
         if($record['level'] >= Logger::ERROR && isset($record['context']['exception'])
             && $record['context']['exception'] instanceof Exception) {
